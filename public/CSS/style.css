@@ -17,7 +17,7 @@ body
 
 /*LOGIN*/
 .card {
-  border: 2px solid var(--minionsBlue);
+  border: 1px solid var(--minionsBlue);
   border-radius: 10px;
   background-color: #fff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -28,6 +28,7 @@ body
   font-weight: bold;
   text-align: center;
   font-size: 1.5rem;
+  letter-spacing: 1px;
 }
 .btn-primary, .btn-success {
   background-color: var(--minionsBlue);
@@ -38,7 +39,7 @@ body
   color: var(--minionsBlue);
 }
 .form-control {
-  border: 2px solid var(--minionsBlue);
+  border: 1px solid var(--minionsBlue);
 }
 .form-label {
   font-weight: bold;
@@ -111,4 +112,28 @@ footer
   margin-top: 50px;
   padding: 20px 0;
 }
-/* CSS Styling ends here. */
+
+.feedback-section {
+  letter-spacing: 1px;
+}
+
+.card-body button {
+  margin-top: 1em;
+}
+
+.field-error-icon {
+  width: 1em;
+  height: 1em;
+}
+
+.field-error-container {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  margin-bottom: 0.3em;
+}
+
+.field-error-container p {
+  margin-bottom: 0;
+  font-size: 0.9em;
+}

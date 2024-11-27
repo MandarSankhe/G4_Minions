@@ -60,39 +60,97 @@ $user = new User($dbc);
 // Initialize variables for feedback messages.
 $feedback = "";
 
+// Initialize array to store errors
+$errors = [];
+
+// Function to check if input is text, numbers and underscores only
+function is_text_and_numbers_only($input_value) {
+    return preg_match("/^[a-zA-Z0-9_]+$/", $input_value);
+}
+
 // Handle form submission.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action']) && $_POST['action'] === 'register') {
-        // Registration logic
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-        $usertype = $_POST['usertype'];
 
-        if (!$user->userExists($username)) {
-            if ($user->register($username, $password, $usertype)) {
-                $feedback = "<div class='alert alert-success'>Registration successful! Please log in.</div>";
-            } else {
-                $feedback = "<div class='alert alert-danger'>Error during registration. Please try again.</div>";
+        // Registration logic
+        // Username field validation
+        if(!empty($_POST['username'])) {
+            $username = $_POST['username'];
+            if(!is_text_and_numbers_only($username)) { // Ensure username does not contain special characters
+                $errors['reg_username_error'] = "<p>Invalid username format. Please ensure username contains only text, numbers or underscores.</p>";
             }
         } else {
-            $feedback = "<div class='alert alert-warning'>Username already exists. Please try a different one.</div>";
+            $errors['reg_username_error'] = "<p>Error! Username is mandatory.</p>";
         }
+
+        // Password field validation
+        if(!empty($_POST['password'])) {
+            $password = $_POST['password'];
+        } else {
+            $errors['reg_password_error'] = "<p>Error! Password is mandatory.</p>";
+        }
+
+        // User type field validation
+        if(!empty($_POST['usertype'])) {
+            $usertype = $_POST['usertype'];
+        } else {
+            $errors['reg_usertype_error'] = "<p>Error! User type is mandatory.</p>";
+        }
+
+        if (count($errors) == 0) {
+            // Validation successful
+            if (!$user->userExists($username)) {
+                if ($user->register($username, $password, $usertype)) {
+                    $feedback = "<div class='alert alert-success'>Registration successful! Please log in.</div>";
+                } else {
+                    $feedback = "<div class='alert alert-danger'>Error during registration. Please try again.</div>";
+                }
+            } else {
+                $feedback = "<div class='alert alert-warning'>Username already exists. Please try a different one.</div>";
+            }
+        }
+        else {
+            // Display error feedback
+            $feedback = "<div class='alert alert-danger'>Please correct errors to register.</div>";
+        }
+
     } elseif (isset($_POST['action']) && $_POST['action'] === 'login') {
         // Login logic
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-
-        if ($user->userExists($username)) {
-            if ($user->login($username, $password)) {
-                // Set session variable and redirect
-                $_SESSION['username'] = $username;
-                header("Location: index.php");
-                exit();
-            } else {
-                $feedback = "<div class='alert alert-danger'>Incorrect password. Please try again.</div>";
+        // Username field validation
+        if(!empty($_POST['username'])) {
+            $username = $_POST['username'];
+            if(!is_text_and_numbers_only($username)) { // Ensure username does not contain special characters
+                $errors['login_username_error'] = "<p>Invalid username format. Please ensure username contains only text and numbers.</p>";
             }
         } else {
-            $feedback = "<div class='alert alert-warning'>Username does not exist. Please register first.</div>";
+            $errors['login_username_error'] = "<p>Error! Username is mandatory.</p>";
+        }
+
+        // Password field validation
+        if(!empty($_POST['password'])) {
+            $password = $_POST['password'];
+        } else {
+            $errors['login_password_error'] = "<p>Error! Password is mandatory.</p>";
+        }
+
+        if (count($errors) == 0) {
+            // Validation successful
+            if ($user->userExists($username)) {
+                if ($user->login($username, $password)) {
+                    // Set session variable and redirect
+                    $_SESSION['username'] = $username;
+                    header("Location: index.php");
+                    exit();
+                } else {
+                    $feedback = "<div class='alert alert-danger'>Incorrect password. Please try again.</div>";
+                }
+            } else {
+                $feedback = "<div class='alert alert-warning'>Username does not exist. Please register first.</div>";
+            }
+        }
+        else {
+            // Display error feedback
+            $feedback = "<div class='alert alert-danger'>Please correct errors to login.</div>";
         }
     }
 }
@@ -105,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minions Themed Login & Registration</title>
+    <title>Login | Register</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="public/CSS/style.css" rel="stylesheet">
 
@@ -130,11 +188,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="hidden" name="action" value="login">
                             <div class="mb-3">
                                 <label for="login-username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="login-username" name="username" required>
+                                <!-- Display any errors on the field -->
+                                <div class="error field-error-container">
+                                    <?php 
+                                        if (!empty($errors['login_username_error'])) { 
+                                            echo '<img src="./public/Images/alert-icon.png" class="field-error-icon" />'; 
+                                            echo $errors['login_username_error'];
+                                        }
+                                    ?>
+                                </div>
+                                <input type="text" class="form-control" id="login-username" name="username">
                             </div>
                             <div class="mb-3">
                                 <label for="login-password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="login-password" name="password" required>
+                                <!-- Display any errors on the field -->
+                                <div class="error field-error-container">
+                                    <?php 
+                                        if (!empty($errors['login_password_error'])) { 
+                                            echo '<img src="./public/Images/alert-icon.png" class="field-error-icon" />'; 
+                                            echo $errors['login_password_error'];
+                                        }
+                                    ?>
+                                </div>
+                                <input type="password" class="form-control" id="login-password" name="password">
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Login</button>
                         </form>
@@ -151,15 +227,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type="hidden" name="action" value="register">
                             <div class="mb-3">
                                 <label for="register-username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="register-username" name="username" required>
+                                <!-- Display any errors on the field -->
+                                <div class="error field-error-container">
+                                    <?php 
+                                        if (!empty($errors['reg_username_error'])) { 
+                                            echo '<img src="./public/Images/alert-icon.png" class="field-error-icon" />'; 
+                                            echo $errors['reg_username_error'];
+                                        }
+                                    ?>
+                                </div>
+                                <input type="text" class="form-control" id="register-username" name="username" >
                             </div>
                             <div class="mb-3">
                                 <label for="register-password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="register-password" name="password" required>
+                                <div class="error field-error-container">
+                                    <?php 
+                                        if (!empty($errors['reg_password_error'])) { 
+                                            echo '<img src="./public/Images/alert-icon.png" class="field-error-icon" />'; 
+                                            echo $errors['reg_password_error'];
+                                        }
+                                    ?>
+                                </div>
+                                <input type="password" class="form-control" id="register-password" name="password" >
                             </div>
                             <div class="mb-3">
                                 <label for="usertype" class="form-label">User Type</label><br>
-                                <select class="form-select" id="usertype" name="usertype" required>
+                                <div class="error field-error-container">
+                                    <?php 
+                                        if (!empty($errors['reg_usertype_error'])) { 
+                                            echo '<img src="./public/Images/alert-icon.png" class="field-error-icon" />'; 
+                                            echo $errors['reg_usertype_error'];
+                                        }
+                                    ?>
+                                </div>
+                                <select class="form-select" id="usertype" name="usertype">
                                     <option value="customer">Customer</option>
                                     <option value="admin">Admin</option>
                                 </select>
