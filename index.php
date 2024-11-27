@@ -1,9 +1,21 @@
 <?php
+// Start the session
+session_start();
+
+// Redirect if the user is not logged in
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+
+// Get the username from the session
+$username = $_SESSION['username'];
+
 // Including the file that initializes the database connection.
 include('dbinit.php');
 
 // Query to fetch all the data from the books table from the database.
-$query = "SELECT * FROM books";
+$query = "SELECT * FROM Products";
 $result = mysqli_query($dbc, $query);
 
 // Checking if there are any rows in the result set.
@@ -13,35 +25,52 @@ $hasRecords = mysqli_num_rows($result) > 0;
 $dbc->close();
 ?>
 
+
+
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Data | Bookstore</title>
-    <!-- Bootstrap CDN for styling -->
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="public/CSS/style.css">
 </head>
+
 <body>
-    <!-- Navbar -->
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Mandar BookStore</a>
+            <a class="navbar-brand" href="#">The Minions</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout.php">Logout</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
-    <!-- Banner with Welcome Text -->
+
     <div class="jumbotron jumbotron-fluid text-white bannerimg">
         <div class="container text-center">
-            <h1 class="display-3">Welcome to Mandar BookStore</h1>
-            <p class="lead">Find the best collection of books here.</p>
-            <a href="insert_data.php" class="btn btn-success btn-lg mt-3">Add New Book</a>
+            <h1 class="display-3">
+                Welcome, <?php echo htmlspecialchars($username); ?>, to Minions TV Store!
+            </h1>
+            <p class="lead">Find the best collection of TVs here.</p>
+            <a href="insert_data.php" class="btn btn-success btn-lg mt-3">Add New TV</a>
         </div>
     </div>
 
-    <!-- Table Section -->
-    <div class="container mb-5">
+
+    <!-- <div class="container mb-5">
         <?php if ($hasRecords): ?>
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-hover">
@@ -88,9 +117,8 @@ $dbc->close();
                 No records found.
             </div>
         <?php endif; ?>
-    </div>
+    </div> -->
 
-    <!-- Footer -->
     <footer class="bg-dark text-white text-center py-3">
         <div class="container">
             <p>&copy; 2024 | Bookstore</p>
@@ -99,9 +127,10 @@ $dbc->close();
         </div>
     </footer>
 
-    <!-- Bootstrap JS, Popper.js, and jQuery -->
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
