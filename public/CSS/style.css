@@ -1,8 +1,56 @@
 /* This is the custom CSS for few self defined classes and to override Bootstrap classes. */
+
+:root {
+  --minionsYellow: #ffe135;
+  --minionsBlue: #002c6c;
+  --minionsBG: #ffe135a8;
+}
+
 body 
 {
+  background-color: var(--minionsBG); /* Minions yellow BG */
+  color: var(--minionsBlue); /* Minions blue */
+  font-family: 'Comic Sans MS', cursive, sans-serif;
   font-family: system-ui;
 }
+
+
+/*LOGIN*/
+.card {
+  border: 2px solid var(--minionsBlue);
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.card-header {
+  background-color: var(--minionsBlue);
+  color: #ffe135;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.5rem;
+}
+.btn-primary, .btn-success {
+  background-color: var(--minionsBlue);
+  border: none;
+}
+.btn-primary:hover, .btn-success:hover {
+  background-color: var(--minionsYellow);
+  color: var(--minionsBlue);
+}
+.form-control {
+  border: 2px solid var(--minionsBlue);
+}
+.form-label {
+  font-weight: bold;
+}
+.minion-logo {
+  display: block;
+  margin: 0 auto 20px auto;
+  max-width: 24%;
+}
+
+
+/*LOGIN ENDS*/
 
 
 .description-column {
