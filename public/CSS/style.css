@@ -91,6 +91,10 @@ body
   color: white;
 }
 
+.table {
+  background-color: white;
+}
+
 tr 
 {
   font-weight: 700;
@@ -117,10 +121,6 @@ footer
   letter-spacing: 1px;
 }
 
-.card-body button {
-  margin-top: 1em;
-}
-
 .field-error-icon {
   width: 1em;
   height: 1em;
@@ -136,4 +136,22 @@ footer
 .field-error-container p {
   margin-bottom: 0;
   font-size: 0.9em;
+}
+
+.nav-items {
+  display: flex;
+  gap: 2em;
+}
+
+.nav-custom-container {
+  display: grid !important;
+  grid-template-columns: 20% auto;
+}
+
+#navbarNav {
+  justify-self: end;
+}
+
+.header-username {
+  margin: 1em 0;
 }

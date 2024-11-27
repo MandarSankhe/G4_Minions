@@ -43,9 +43,10 @@ if ($dbc->query($users_table) === TRUE) {
 // Creating `Products` table.
 $products_table = "CREATE TABLE IF NOT EXISTS Products (
     ID INT AUTO_INCREMENT PRIMARY KEY,
-    ProductName VARCHAR(100) NOT NULL,
+    Model VARCHAR(100) NOT NULL,
     Brand VARCHAR(100) NOT NULL,
     Description TEXT NOT NULL,
+    Stock VARCHAR(50) NOT NULL CHECK (Stock IN ('instock', 'preorder')),
     Price DECIMAL(10, 2) NOT NULL
 )";
 if ($dbc->query($products_table) === TRUE) {

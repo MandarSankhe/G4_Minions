@@ -4,77 +4,77 @@ include('dbinit.php');
 
 // Initializing Key Variables.
 $id = $_GET['id'] ?? null;
-$book = null;
+$tv = null;
 $success = false;
 $error = '';
 
 // Array to store field-specific error messages.
 $fieldErrors = [
-    'name' => '',
-    'author' => '',
-    'description' => '',
-    'quantity' => '',
+    'tvModel' => '',
+    'tvBrand' => '',
+    'tvDescription' => '',
+    'tvStock' => '',
     'price' => ''
 ];
 
 if ($id) {
-    // Fetching the book by ID.
-    $query = "SELECT * FROM books WHERE BookID = ?";
+    // Fetching the TV by ID.
+    $query = "SELECT * FROM Products WHERE ID = ?";
     $stmt = mysqli_prepare($dbc, $query);
     mysqli_stmt_bind_param($stmt, 'i', $id);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
-    $book = mysqli_fetch_assoc($result);
+    $tv = mysqli_fetch_assoc($result);
 
-    // Handle the case where no book is found.
-    if (!$book) {
-        $error = "Book not found.";
+    // Handle the case where no tv is found.
+    if (!$tv) {
+        $error = "TV not found.";
     }
 }
 
-// Initializing form values and setting default values based on the book details.
-$name = htmlspecialchars($book['BookName'] ?? '', ENT_QUOTES, 'UTF-8');
-$author = htmlspecialchars($book['Author'] ?? '', ENT_QUOTES, 'UTF-8');
-$description = htmlspecialchars($book['BookDescription'] ?? '', ENT_QUOTES, 'UTF-8');
-$quantity = htmlspecialchars($book['QuantityAvailable'] ?? '', ENT_QUOTES, 'UTF-8');
-$price = htmlspecialchars($book['Price'] ?? '', ENT_QUOTES, 'UTF-8');
+// Initializing form values and setting default values based on the tv details.
+$tvModel = htmlspecialchars($tv['Model'] ?? '', ENT_QUOTES, 'UTF-8');
+$tvBrand = htmlspecialchars($tv['Brand'] ?? '', ENT_QUOTES, 'UTF-8');
+$tvDescription = htmlspecialchars($tv['Description'] ?? '', ENT_QUOTES, 'UTF-8');
+$tvStock = htmlspecialchars($tv['Stock'] ?? '', ENT_QUOTES, 'UTF-8');
+$price = htmlspecialchars($tv['Price'] ?? '', ENT_QUOTES, 'UTF-8');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Sanitize and get the form input values.
-    $name = htmlspecialchars(trim($_POST['BookName']), ENT_QUOTES, 'UTF-8');
-    $author = htmlspecialchars(trim($_POST['Author']), ENT_QUOTES, 'UTF-8');
-    $description = htmlspecialchars(trim($_POST['BookDescription']), ENT_QUOTES, 'UTF-8');
-    $quantity = htmlspecialchars(trim($_POST['QuantityAvailable']), ENT_QUOTES, 'UTF-8');
-    $price = htmlspecialchars(trim($_POST['Price']), ENT_QUOTES, 'UTF-8');
+    $tvModel = htmlspecialchars(trim($_POST['tvModel']), ENT_QUOTES, 'UTF-8');
+    $tvBrand = htmlspecialchars(trim($_POST['tvBrand']), ENT_QUOTES, 'UTF-8');
+    $tvDescription = htmlspecialchars(trim($_POST['tvDescription']), ENT_QUOTES, 'UTF-8');
+    $tvStock = htmlspecialchars(trim($_POST['tvStock']), ENT_QUOTES, 'UTF-8');
+    $price = htmlspecialchars(trim($_POST['price']), ENT_QUOTES, 'UTF-8');
 
-    // Validate inputs.
-    if (empty($name)) {
-        $fieldErrors['name'] = "Book Name is required.";
+    // Validate input
+    if (empty($tvModel)) {
+        $fieldErrors['tvModel'] = "Model is required.";
     }
-    if (empty($author)) {
-        $fieldErrors['author'] = "Author Name is required.";
+    if (empty($tvBrand)) {
+        $fieldErrors['tvBrand'] = "Brand is required.";
     }
-    if (empty($description)) {
-        $fieldErrors['description'] = "Description is required.";
+    if (empty($tvDescription)) {
+        $fieldErrors['tvDescription'] = "Description is required.";
     }
-    if (empty($quantity) || !is_numeric($quantity) || intval($quantity) <= 0) {
-        $fieldErrors['quantity'] = "Quantity is required and must be a positive number.";
+    if (empty($tvStock)) {
+        $fieldErrors['tvStock'] = "Stock is required.";
     }
     if (empty($price) || !is_numeric($price) || floatval($price) <= 0) {
         $fieldErrors['price'] = "Price is required and must be a positive number.";
     }
 
-    // If there are no validation errors, update the book details.
+    // If there are no validation errors, update the tv details.
     if (array_filter($fieldErrors) == []) {
-        $stmt = mysqli_prepare($dbc, "UPDATE books SET BookName = ?, BookDescription = ?, Author = ?, QuantityAvailable = ?, Price = ? WHERE BookID = ?");
-        mysqli_stmt_bind_param($stmt, 'sssidi', $name, $author, $description, $quantity, $price, $id);
+        $stmt = mysqli_prepare($dbc, "UPDATE Products SET Model = ?, Brand = ?, Description = ?, Stock = ?, Price = ? WHERE ID = ?");
+        mysqli_stmt_bind_param($stmt, 'ssssdi', $tvModel, $tvBrand, $tvDescription, $tvStock, $price, $id);
 
         if (mysqli_stmt_execute($stmt)) {
             $success = true;
             header("Location: index.php");
             exit();
         } else {
-            $error = 'Error updating book: ' . mysqli_error($dbc);
+            $error = 'Error updating tv: ' . mysqli_error($dbc);
         }
     } else {
         $error = "Please fix the following errors.";
@@ -91,7 +91,7 @@ $dbc->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Book</title>
+    <title>Update TV</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="public/CSS/style.css">
 </head>
@@ -99,8 +99,21 @@ $dbc->close();
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">Mandar BookStore</a>
+        <div class="container nav-custom-container">
+            <a class="navbar-brand" href="#">Minions TVstore</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto nav-items">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cart.php">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout.php">Logout</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -110,58 +123,60 @@ $dbc->close();
                 <!-- Using Bootstrap card component for a cleaner look -->
                 <div class="card shadow-lg">
                     <div class="card-header text-white bannerimg text-center">
-                        <h2 class="mb-0">Update Book</h2>
+                        <h2 class="mb-0">Update TV</h2>
                     </div>
                     <div class="card-body">
                         <!-- Display success or error message -->
                         <?php if ($success): ?>
-                            <div class="alert alert-success">Book updated successfully!</div>
+                            <div class="alert alert-success">TV updated successfully!</div>
                         <?php elseif (!empty($error)): ?>
                             <div class="alert alert-danger"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div>
                         <?php endif; ?>
 
-                        <!-- Only show form if book exists -->
-                        <?php if ($book): ?>
-                            <form name="bookForm" method="POST" action="">
+                        <!-- Only show form if TV exists -->
+                        <?php if ($tv): ?>
+                            <form name="tvUpdateForm" method="POST" action="">
                                 <div class="form-row">
-                                    <!-- Book Name Field -->
+                                    <!-- TV Model Field -->
                                     <div class="form-group col-md-6">
-                                        <label>Book Name<span class="required-asterisk">*</span></label>
-                                        <input type="text" name="BookName" class="form-control" value="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>">
-                                        <span class="text-danger"><?= htmlspecialchars($fieldErrors['name'], ENT_QUOTES, 'UTF-8') ?></span>
+                                        <label for="tvModel">TV Model<span class="required-asterisk">*</span></label>
+                                        <input type="text" name="tvModel" class="form-control" value="<?= htmlspecialchars($tvModel, ENT_QUOTES, 'UTF-8') ?>">
+                                        <span class="text-danger"><?= htmlspecialchars($fieldErrors['tvModel'], ENT_QUOTES, 'UTF-8') ?></span>
                                     </div>
-                                    <!-- Author Name Field -->
+                                    <!-- TV Brand Field -->
                                     <div class="form-group col-md-6">
-                                        <label>Author Name<span class="required-asterisk">*</span></label>
-                                        <input type="text" name="Author" class="form-control" value="<?= htmlspecialchars($author, ENT_QUOTES, 'UTF-8') ?>">
-                                        <span class="text-danger"><?= htmlspecialchars($fieldErrors['author'], ENT_QUOTES, 'UTF-8') ?></span>
+                                        <label for="tvBrand">TV Brand<span class="required-asterisk">*</span></label>
+                                        <input type="text" name="tvBrand" class="form-control" value="<?= htmlspecialchars($tvBrand, ENT_QUOTES, 'UTF-8') ?>">
+                                        <span class="text-danger"><?= htmlspecialchars($fieldErrors['tvBrand'], ENT_QUOTES, 'UTF-8') ?></span>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
-                                        <!-- Book Description Field -->
-                                        <label>Description<span class="required-asterisk">*</span></label>
-                                        <textarea name="BookDescription" class="form-control" rows="5"><?= htmlspecialchars($description, ENT_QUOTES, 'UTF-8') ?></textarea>
-                                        <span class="text-danger"><?= htmlspecialchars($fieldErrors['description'], ENT_QUOTES, 'UTF-8') ?></span>
+                                        <!-- TV Description Field -->
+                                        <label for="tvDescription">Description<span class="required-asterisk">*</span></label>
+                                        <textarea name="tvDescription" class="form-control" rows="5"><?= htmlspecialchars($tvDescription, ENT_QUOTES, 'UTF-8') ?></textarea>
+                                        <span class="text-danger"><?= htmlspecialchars($fieldErrors['tvDescription'], ENT_QUOTES, 'UTF-8') ?></span>
                                     </div>
 
-                                    <!-- Quantity Available Field -->
                                     <div class="form-group col-md-6">
-                                        <label>Quantity Available<span class="required-asterisk">*</span></label>
-                                        <input type="number" name="QuantityAvailable" class="form-control" value="<?= htmlspecialchars($quantity, ENT_QUOTES, 'UTF-8') ?>">
-                                        <span class="text-danger"><?= htmlspecialchars($fieldErrors['quantity'], ENT_QUOTES, 'UTF-8') ?></span>
+                                        <!-- Stock Field -->
+                                        <label for="tvStock">Stock<span class="required-asterisk">*</span></label>
+                                        <select name="tvStock" class="form-control" id="tvStock">
+                                            <option value="instock" <?= ($tvStock == 'instock') ? 'selected' : '' ?>>In Stock</option>
+                                            <option value="preorder" <?= ($tvStock == 'preorder') ? 'selected' : '' ?>>Pre-order</option>
+                                        </select>
+                                        <span class="text-danger"><?= htmlspecialchars($fieldErrors['tvStock'], ENT_QUOTES, 'UTF-8') ?></span>
                                         <br>
 
                                         <!-- Price Field -->
-
-                                        <label>Price<span class="required-asterisk">*</span></label>
-                                        <input type="number" step="0.01" name="Price" class="form-control" value="<?= htmlspecialchars($price, ENT_QUOTES, 'UTF-8') ?>">
+                                        <label for="price">Price<span class="required-asterisk">*</span></label>
+                                        <input type="number" step="0.01" name="price" id="price" class="form-control" value="<?= htmlspecialchars($price, ENT_QUOTES, 'UTF-8') ?>">
                                         <span class="text-danger"><?= htmlspecialchars($fieldErrors['price'], ENT_QUOTES, 'UTF-8') ?></span>
                                     </div>
                                 </div>
                                 <!-- Submit and Back Buttons -->
                                 <div class="form-group text-right">
-                                    <button type="submit" class="btn btn-primary">Update Book</button>
+                                    <button type="submit" class="btn btn-primary">Update TV</button>
                                     <a href="index.php" class="btn btn-secondary">Back to Home</a>
                                 </div>
                             </form>
