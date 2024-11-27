@@ -10,7 +10,7 @@ body
 {
   background-color: var(--minionsBG); /* Minions yellow BG */
   color: var(--minionsBlue); /* Minions blue */
-  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-family: 'Comic Sans MS', cursive, sans-serif !important;
   font-family: system-ui;
 }
 
