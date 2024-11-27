@@ -17,7 +17,6 @@ body
 
 /*LOGIN*/
 .card {
-  border: 1px solid var(--minionsBlue);
   border-radius: 10px;
   background-color: #fff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -154,4 +153,13 @@ footer
 
 .header-username {
   margin: 1em 0;
+}
+
+.tv-container .card {
+  border: none;
+}
+
+.card-img, .card-img-top {
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
 }

@@ -72,43 +72,34 @@ $dbc->close();
 
     <div class="container mb-5">
         <?php if ($hasRecords): ?>
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered table-hover">
-                    <caption class="text-center">List of TVs</caption>
-                    <thead>
-                        <tr>
-                            <th>SR No.</th>
-                            <th>Model</th>
-                            <th>Brand</th>
-                            <th class='description-column'>Description</th>
-                            <th>Stock</th>
-                            <th>Price</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $sr_no = 0;
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            $sr_no++;
-                            echo 
-                                "<tr>
-                                    <td>$sr_no</td>
-                                    <td>" . htmlspecialchars($row['Model']) . "</td>
-                                    <td>" . htmlspecialchars($row['Brand']) . "</td>
-                                    <td class='description-column'>" . htmlspecialchars($row['Description']) . "</td>
-                                    <td>{$row['Stock']}</td>
-                                    <td>$" . number_format($row['Price'], 2) . "</td>
-                                    <td>
-                                        <a href='update_data.php?id={$row['ID']}' class='btn btn-primary'>Update</a>
-                                        <a href='delete_data.php?id={$row['ID']}' class='btn btn-danger'>Delete</a>
-                                    </td>
-                                </tr>
-                            ";
-                        }
-                        ?>
-                    </tbody>
-                </table>
+            <!-- TVs list -->
+            <div class="row tv-container">
+                <?php
+                $sr_no = 0;
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $sr_no++;
+                    ?>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <!-- TV image -->
+                            <img src="./public/Images/lg_oled.png" class="card-img-top" alt="TV Image">
+                            <div class="card-body">
+                                <h5 class="card-title"><?= htmlspecialchars($row['Model']) ?></h5>
+                                <h6 class="card-subtitle mb-2 text-muted"><?= htmlspecialchars($row['Brand']) ?></h6>
+                                <p class="card-text description-column"><?= htmlspecialchars($row['Description']) ?></p>
+                                <p class="card-text">
+                                    <?= $row['Stock'] === 'instock' ? 'In Stock' : 'Pre-Order' ?><br>
+                                    <strong>$<?= number_format($row['Price'], 2) ?></strong>
+                                </p>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="update_data.php?id=<?= $row['ID'] ?>" class="btn btn-primary btn-sm">Update</a>
+                                <a href="delete_data.php?id=<?= $row['ID'] ?>" class="btn btn-danger btn-sm">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                <?php } ?>
             </div>
         <?php else: ?>
             <div class="alert alert-warning text-center" role="alert">
