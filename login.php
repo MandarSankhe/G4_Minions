@@ -63,9 +63,9 @@ $feedback = "";
 // Initialize array to store errors
 $errors = [];
 
-// Function to check if input is text and numbers only
+// Function to check if input is text, numbers and underscores only
 function is_text_and_numbers_only($input_value) {
-    return preg_match("/^[a-zA-Z0-9\s]+$/", $input_value);
+    return preg_match("/^[a-zA-Z0-9_]+$/", $input_value);
 }
 
 // Handle form submission.
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if(!empty($_POST['username'])) {
             $username = $_POST['username'];
             if(!is_text_and_numbers_only($username)) { // Ensure username does not contain special characters
-                $errors['reg_username_error'] = "<p>Invalid username format. Please ensure username contains only text and numbers.</p>";
+                $errors['reg_username_error'] = "<p>Invalid username format. Please ensure username contains only text, numbers or underscores.</p>";
             }
         } else {
             $errors['reg_username_error'] = "<p>Error! Username is mandatory.</p>";
