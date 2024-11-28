@@ -22,7 +22,9 @@ CREATE TABLE IF NOT EXISTS Products (
     Brand VARCHAR(100) NOT NULL,
     Description TEXT NOT NULL,
     Stock VARCHAR(50) NOT NULL CHECK (Stock IN ('instock', 'preorder')),
-    Price DECIMAL(10, 2) NOT NULL
+    Price DECIMAL(10, 2) NOT NULL,
+    ImageURL VARCHAR(255) DEFAULT NULL
+
 );
 
 -- Create the Cart table

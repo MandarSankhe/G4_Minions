@@ -75,18 +75,19 @@ $dbc->close();
             <!-- TVs list -->
             <div class="row tv-container">
                 <?php
-                $sr_no = 0;
                 while ($row = mysqli_fetch_assoc($result)) {
-                    $sr_no++;
+                    // Fetch image URL, if null -> display default image
+                    $imageURL = empty($row['ImageURL']) ? "./public/Images/tv/default.png" : htmlspecialchars($row['ImageURL']);
                     ?>
+                    
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
                             <!-- TV image -->
-                            <img src="./public/Images/lg_oled.png" class="card-img-top" alt="TV Image">
+                            <img src="<?= $imageURL ?>" class="card-img-top" alt="TV Image">
                             <div class="card-body">
                                 <h5 class="card-title"><?= htmlspecialchars($row['Model']) ?></h5>
                                 <h6 class="card-subtitle mb-2 text-muted"><?= htmlspecialchars($row['Brand']) ?></h6>
-                                <p class="card-text description-column"><?= htmlspecialchars($row['Description']) ?></p>
+                                <p class="card-text description-column-products"><?= htmlspecialchars($row['Description']) ?></p>
                                 <p class="card-text">
                                     <?= $row['Stock'] === 'instock' ? 'In Stock' : 'Pre-Order' ?><br>
                                     <strong>$<?= number_format($row['Price'], 2) ?></strong>

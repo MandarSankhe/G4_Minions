@@ -58,7 +58,6 @@ body
   word-wrap: break-word; /* Ensures long content breaks into a new line */
   white-space: normal; /* Allows text wrapping */
 }
-
 .bannerimg {
   background-image: url('../Images/Banner-img.jpg'); 
   background-size: cover; 
@@ -162,4 +161,11 @@ footer
 .card-img, .card-img-top {
   border-top-left-radius: 10px !important;
   border-top-right-radius: 10px !important;
+  padding: 0.5em;
+}
+
+.description-column-products {
+  word-wrap: break-word;
+  white-space: normal; 
+  text-align: justify;
 }
