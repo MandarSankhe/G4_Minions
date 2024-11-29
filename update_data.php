@@ -1,6 +1,7 @@
 <?php
-// This below line is including the file that initializes the database connection.
+// Including the file that initializes the database connection.
 include('dbinit.php');
+include('Television.php');  // Include the Television class
 
 // Initializing Key Variables.
 $id = $_GET['id'] ?? null;
@@ -18,15 +19,11 @@ $fieldErrors = [
 ];
 
 if ($id) {
-    // Fetching the TV by ID.
-    $query = "SELECT * FROM Products WHERE ID = ?";
-    $stmt = mysqli_prepare($dbc, $query);
-    mysqli_stmt_bind_param($stmt, 'i', $id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $tv = mysqli_fetch_assoc($result);
+    // Fetching TV details
+    $tvObj = new Television($dbc); // Create new Television object
+    $tv = $tvObj->getTvById($id); // Fetch the TV by ID
 
-    // Handle the case where no tv is found.
+    // No TV is found.
     if (!$tv) {
         $error = "TV not found.";
     }
@@ -38,6 +35,7 @@ $tvBrand = htmlspecialchars($tv['Brand'] ?? '', ENT_QUOTES, 'UTF-8');
 $tvDescription = htmlspecialchars($tv['Description'] ?? '', ENT_QUOTES, 'UTF-8');
 $tvStock = htmlspecialchars($tv['Stock'] ?? '', ENT_QUOTES, 'UTF-8');
 $price = htmlspecialchars($tv['Price'] ?? '', ENT_QUOTES, 'UTF-8');
+$tvImage = htmlspecialchars($tv['ImageURL'] ?? '', ENT_QUOTES, 'UTF-8');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Sanitize and get the form input values.
@@ -46,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tvDescription = htmlspecialchars(trim($_POST['tvDescription']), ENT_QUOTES, 'UTF-8');
     $tvStock = htmlspecialchars(trim($_POST['tvStock']), ENT_QUOTES, 'UTF-8');
     $price = htmlspecialchars(trim($_POST['price']), ENT_QUOTES, 'UTF-8');
+    $tvImage = htmlspecialchars(trim($_POST['tvImage']), ENT_QUOTES, 'UTF-8');
 
     // Validate input
     if (empty($tvModel)) {
@@ -66,15 +65,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // If there are no validation errors, update the tv details.
     if (array_filter($fieldErrors) == []) {
-        $stmt = mysqli_prepare($dbc, "UPDATE Products SET Model = ?, Brand = ?, Description = ?, Stock = ?, Price = ? WHERE ID = ?");
-        mysqli_stmt_bind_param($stmt, 'ssssdi', $tvModel, $tvBrand, $tvDescription, $tvStock, $price, $id);
 
-        if (mysqli_stmt_execute($stmt)) {
+        // Update properties of the TV object
+        $tvObj->setId($id);
+        $tvObj->setModel($tvModel);
+        $tvObj->setBrand($tvBrand);
+        $tvObj->setDescription($tvDescription);
+        $tvObj->setStock($tvStock);
+        $tvObj->setPrice($price);
+        $tvObj->setImageUrl($tvImage);
+
+        // Call the update method of the TV object
+        $updateResult = $tvObj->updateTv();
+
+        if($updateResult === true) {
             $success = true;
             header("Location: index.php");
             exit();
         } else {
-            $error = 'Error updating tv: ' . mysqli_error($dbc);
+            $error = $updateResult;
         }
     } else {
         $error = "Please fix the following errors.";
@@ -172,6 +181,18 @@ $dbc->close();
                                         <label for="price">Price<span class="required-asterisk">*</span></label>
                                         <input type="number" step="0.01" name="price" id="price" class="form-control" value="<?= htmlspecialchars($price, ENT_QUOTES, 'UTF-8') ?>">
                                         <span class="text-danger"><?= htmlspecialchars($fieldErrors['price'], ENT_QUOTES, 'UTF-8') ?></span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <!-- TV Image Field -->
+                                    <div class="form-group col-md-6">
+                                        <label for="tvImage">Image</label>
+                                        <input type="text" name="tvImage" class="form-control" id="tvImage" value="<?= htmlspecialchars($tvImage) ?>">
+                                    </div>
+                                    <!-- Submit Button -->
+                                    <div class="form-group col-md-6">
+                                        <!-- <button type="submit" class="btn btn-success">Add TV</button>
+                                        <a href="index.php" class="btn btn-secondary">Back to Home</a> TODO -->
                                     </div>
                                 </div>
                                 <!-- Submit and Back Buttons -->

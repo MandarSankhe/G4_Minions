@@ -169,3 +169,7 @@ footer
   white-space: normal; 
   text-align: justify;
 }
+
+.card-tv-actions {
+  padding: 0.7em 2em;
+}

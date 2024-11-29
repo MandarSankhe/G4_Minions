@@ -8,18 +8,25 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Get the username from the session
+// Get the username and user type from the session
 $username = $_SESSION['username'];
+$usertype = $_SESSION['usertype'];
 
-// Including the file that initializes the database connection.
+// Check if the user is an admin
+$isAdmin = $usertype == 'admin';
+
+// Including the file that initializes db connection and TV class.
 include('dbinit.php');
+include('television.php');
 
-// Query to fetch all the data from the books table from the database.
-$query = "SELECT * FROM Products";
-$result = mysqli_query($dbc, $query);
+// Create an instance of the Television class
+$tv = new Television($dbc);
 
-// Checking if there are any rows in the result set.
-$hasRecords = mysqli_num_rows($result) > 0;
+// Fetch all TVs
+$tvList = $tv->getAllTVs();
+
+// Check if there are any TVs in result set
+$hasRecords = count($tvList) > 0;
 
 // Closing the database connection.
 $dbc->close();
@@ -39,7 +46,6 @@ $dbc->close();
 </head>
 
 <body>
-
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container nav-custom-container">
             <a class="navbar-brand" href="#">Minions TVstore</a>
@@ -65,8 +71,12 @@ $dbc->close();
                 Minions TV Store
             </h1>
             <h4 class="header-username">Welcome, <?php echo htmlspecialchars($username); ?>!</h4>
-            <p class="lead">Find the best collection of TVs here.</p>
-            <a href="insert_data.php" class="btn btn-success btn-lg mt-3">Add New TV</a>
+            <!-- Conditional content based on usertype -->
+            <?php if ($isAdmin): ?>
+                <a href="insert_data.php" class="btn btn-success btn-lg mt-3">Add New TV</a>
+            <?php else: ?>
+                <p class="lead">Find the best collection of TVs here.</p>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -75,9 +85,9 @@ $dbc->close();
             <!-- TVs list -->
             <div class="row tv-container">
                 <?php
-                while ($row = mysqli_fetch_assoc($result)) {
+                foreach ($tvList as $row) {
                     // Fetch image URL, if null -> display default image
-                    $imageURL = empty($row['ImageURL']) ? "./public/Images/tv/default.png" : htmlspecialchars($row['ImageURL']);
+                    $imageURL = empty($row['ImageURL']) ? "./public/images/tv/default.png" : "./public/images/tv/" . htmlspecialchars($row['ImageURL']);
                     ?>
                     
                     <div class="col-md-4 mb-4">
@@ -94,8 +104,15 @@ $dbc->close();
                                 </p>
                             </div>
                             <div class="card-footer text-center">
-                                <a href="update_data.php?id=<?= $row['ID'] ?>" class="btn btn-primary btn-sm">Update</a>
-                                <a href="delete_data.php?id=<?= $row['ID'] ?>" class="btn btn-danger btn-sm">Delete</a>
+                                <!-- Conditionally display buttons for admin and customers -->
+                                <?php if ($isAdmin): ?>
+                                    <!-- Show "Update" and "Delete" buttons for admin -->
+                                    <a href="update_data.php?id=<?= $row['ID'] ?>" class="btn btn-primary btn-sm card-tv-actions">Update</a>
+                                    <a href="delete_data.php?id=<?= $row['ID'] ?>" class="btn btn-danger btn-sm card-tv-actions">Delete</a>
+                                <?php else: ?>
+                                    <!-- Show "Add to Cart" button for customers -->
+                                    <a href="update_cart.php?id=<?= $row['ID'] ?>" class="btn btn-primary btn-sm card-tv-actions">Add to Cart</a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

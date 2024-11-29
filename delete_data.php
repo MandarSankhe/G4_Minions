@@ -1,6 +1,7 @@
 <?php
 // This below line is including the file that initializes the database connection.
 include('dbinit.php');
+include('television.php');
 
 // Retrieve the TV ID from the query string (GET request). If not provided, $id will be null.
 $id = $_GET['id'] ?? null;
@@ -12,27 +13,22 @@ $error = '';
 // If an ID is provided, a TV is selected for deletion.
 if ($id) 
 {
+    // Instantiate Television class
+    $tv = new Television($dbc);
+    $tv->setId($id);  // Set the ID of the TV to be deleted.
+
     // This below if block checks if the form has been submitted via POST request or not.
     if ($_SERVER['REQUEST_METHOD'] == 'POST') 
     {
-        // This below code prepares a statement to delete the TV with the given ID.
-        $stmt = mysqli_prepare($dbc, "DELETE FROM Products WHERE ID = ?");
+        // Call delete method of TV object
+        $deleteResult = $tv->deleteTv();
 
-        // Binding the TV ID (integer) to the prepared statement.
-        mysqli_stmt_bind_param($stmt, 'i', $id);
-
-        // This below if block will execute the statement and check if the data is deleted or not.
-        if (mysqli_stmt_execute($stmt)) 
-        {
-            // If it is successfully deleted then it redirects the user to index.php
+        if($deleteResult === true) {
             $success = true;
             header("Location: index.php");
             exit();
-        } 
-        else 
-        {
-            // It will come to this else block in case of any error and it will store it into "$error" variable.
-            $error = 'Error: ' . mysqli_error($dbc);
+        } else {
+            $error = $deleteResult;
         }
     }
 }

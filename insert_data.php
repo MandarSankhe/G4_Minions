@@ -2,6 +2,7 @@
 
 // Include the file that initializes the database connection.
 include('dbinit.php');
+include('Television.php'); // Include the TV class
 
 // Initializing variables for form values and error messages.
 $tvModel = '';
@@ -9,6 +10,7 @@ $tvBrand = '';
 $tvDescription = '';
 $tvStock = '';
 $price = '';
+$tvImage = '';
 $success = false;
 $error = '';
 
@@ -29,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tvDescription = mysqli_real_escape_string($dbc, trim($_POST['tvDescription']));
     $tvStock = mysqli_real_escape_string($dbc, trim($_POST['tvStock']));
     $price = mysqli_real_escape_string($dbc, trim($_POST['Price']));
+    $tvImage = mysqli_real_escape_string($dbc, trim($_POST['tvImage']));
 
     // Validating inputs and handling errors.
     if (empty($tvModel)) {
@@ -49,26 +52,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // If there are no errors, proceed to insert data.
     if (array_filter($fieldErrors) == []) {
-        // Prepare an SQL statement to insert the form data into the database.
-        $stmt = mysqli_prepare($dbc, "INSERT INTO Products (Model, Brand, Description, Stock, Price) VALUES (?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, 'ssssd', $tvModel, $tvBrand, $tvDescription, $tvStock, $price);
 
-        // Execute and check if the statement was successful.
-        if (mysqli_stmt_execute($stmt)) {
+        // Create an instance of the Television class
+        $tv = new Television($dbc);
+
+        // Set the values for the TV object
+        $tv->setModel($tvModel);
+        $tv->setBrand($tvBrand);
+        $tv->setDescription($tvDescription);
+        $tv->setStock($tvStock);
+        $tv->setPrice($price);
+        $tv->setImageUrl($tvImage);
+
+        // Call the insertTv method to insert the TV into the database
+        $insertResult = $tv->insertTv();
+
+        if ($insertResult === true) {
             $success = true;
             header("Location: index.php");
             exit();
         } else {
-            // Display SQL errors, if any.
-            $error = 'Error: ' . mysqli_error($dbc);
+            // Display SQL errors
+            $error = $insertResult;
         }
     } else {
         $error = "Please fix the following errors:";
     }
 }
 
-// Closing the database connection.
+// Close the database connection.
 $dbc->close();
+
 ?>
 
 <!DOCTYPE html>
@@ -159,6 +173,18 @@ $dbc->close();
                                     <label for="Price">Price<span class="text-danger">*</span></label>
                                     <input type="number" name="Price" class="form-control" id="Price" step="0.01" value="<?= htmlspecialchars($price) ?>">
                                     <small class="text-danger"><?= htmlspecialchars($fieldErrors['price']) ?></small>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <!-- TV Image Field -->
+                                <div class="form-group col-md-6">
+                                    <label for="tvImage">Image</label>
+                                    <input type="text" name="tvImage" class="form-control" id="tvImage" value="<?= htmlspecialchars($tvImage) ?>">
+                                </div>
+                                <!-- Submit Button -->
+                                <div class="form-group col-md-6">
+                                    <!-- <button type="submit" class="btn btn-success">Add TV</button>
+                                    <a href="index.php" class="btn btn-secondary">Back to Home</a> TODO -->
                                 </div>
                             </div>
                             <!-- Submit Button -->
