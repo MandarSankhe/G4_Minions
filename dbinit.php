@@ -43,10 +43,12 @@ if ($dbc->query($users_table) === TRUE) {
 // Creating `Products` table.
 $products_table = "CREATE TABLE IF NOT EXISTS Products (
     ID INT AUTO_INCREMENT PRIMARY KEY,
-    ProductName VARCHAR(100) NOT NULL,
+    Model VARCHAR(100) NOT NULL,
     Brand VARCHAR(100) NOT NULL,
     Description TEXT NOT NULL,
-    Price DECIMAL(10, 2) NOT NULL
+    Stock VARCHAR(50) NOT NULL CHECK (Stock IN ('instock', 'preorder')),
+    Price DECIMAL(10, 2) NOT NULL,
+    ImageURL VARCHAR(255) DEFAULT NULL
 )";
 if ($dbc->query($products_table) === TRUE) {
     echo "<script>console.log('Table \"Products\" created successfully');</script>";
@@ -97,5 +99,8 @@ if ($dbc->query($order_detail_table) === TRUE) {
 } else {
     echo "<script>console.log('Error creating OrderDetail table: " . $dbc->error . "');</script>";
 }
+
+// Add tv products to table TODO
+// TODO
 
 ?>

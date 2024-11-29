@@ -17,7 +17,6 @@ body
 
 /*LOGIN*/
 .card {
-  border: 1px solid var(--minionsBlue);
   border-radius: 10px;
   background-color: #fff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -59,7 +58,6 @@ body
   word-wrap: break-word; /* Ensures long content breaks into a new line */
   white-space: normal; /* Allows text wrapping */
 }
-
 .bannerimg {
   background-image: url('../Images/Banner-img.jpg'); 
   background-size: cover; 
@@ -91,6 +89,10 @@ body
   color: white;
 }
 
+.table {
+  background-color: white;
+}
+
 tr 
 {
   font-weight: 700;
@@ -117,10 +119,6 @@ footer
   letter-spacing: 1px;
 }
 
-.card-body button {
-  margin-top: 1em;
-}
-
 .field-error-icon {
   width: 1em;
   height: 1em;
@@ -136,4 +134,42 @@ footer
 .field-error-container p {
   margin-bottom: 0;
   font-size: 0.9em;
+}
+
+.nav-items {
+  display: flex;
+  gap: 2em;
+}
+
+.nav-custom-container {
+  display: grid !important;
+  grid-template-columns: 20% auto;
+}
+
+#navbarNav {
+  justify-self: end;
+}
+
+.header-username {
+  margin: 1em 0;
+}
+
+.tv-container .card {
+  border: none;
+}
+
+.card-img, .card-img-top {
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
+  padding: 0.5em;
+}
+
+.description-column-products {
+  word-wrap: break-word;
+  white-space: normal; 
+  text-align: justify;
+}
+
+.card-tv-actions {
+  padding: 0.7em 2em;
 }
