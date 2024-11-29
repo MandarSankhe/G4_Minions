@@ -1,4 +1,10 @@
 <?php
+session_start(); 
+// Redirect if the user is not logged in
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+} // TODO Customer
 
 // Include the file that initializes the database connection.
 include('dbinit.php');
@@ -110,7 +116,7 @@ $dbc->close();
                         <a class="nav-link" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="cart.php">Cart</a>
+                        <a class="nav-link" href="cart_page.php">Cart</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">Logout</a>
