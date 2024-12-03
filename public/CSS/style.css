@@ -136,6 +136,11 @@ footer
   font-size: 0.9em;
 }
 
+.logo {
+  width: 1.8em;
+  margin-right: 0.2em;
+}
+
 .nav-items {
   display: flex;
   gap: 2em;
@@ -210,7 +215,7 @@ footer
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: solid 1px #7d7c7c3b;
+  background-color: white;
 }
 
 .cart-summary .summary-item {
@@ -267,4 +272,21 @@ footer
   border: solid 1px var(--minionsBlue);
   gap: 0.9em;
   align-items: center;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column !important;
+  align-items: start !important;
+}
+
+.filter-field label {
+  font-size: 0.95em;
+  font-weight: bold;
+  margin-left: 0.2em;
+  padding-bottom: 0.1em;
+}
+
+#filter-products-form {
+  align-items: end !important;
 }

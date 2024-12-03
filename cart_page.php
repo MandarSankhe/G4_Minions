@@ -70,7 +70,10 @@ $finalTotal = $subtotal + $taxAmount;
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container nav-custom-container">
-            <a class="navbar-brand" href="#">Minions TVstore</a>
+            <a class="navbar-brand" href="#">
+                <img src="./public/images/logo.png" class="logo" />
+                Minions TVstore
+            </a>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto nav-items">
                     <li class="nav-item">
