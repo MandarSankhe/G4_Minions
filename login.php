@@ -28,7 +28,7 @@ class User
     // Log in an existing user.
     public function login($username, $password)
     {
-        $query = "SELECT password, usertype FROM Users WHERE username = ?";
+        $query = "SELECT ID, password, usertype FROM Users WHERE username = ?";
         $stmt = $this->dbc->prepare($query);
         $stmt->bind_param('s', $username);
         $stmt->execute();
@@ -38,10 +38,13 @@ class User
             $row = $result->fetch_assoc();
             // Validate password
             if (password_verify($password, $row['password'])) {
-                return $row['usertype']; // Return usertype if password is valid
+                // Return userid and usertype if password is valid
+                return [
+                    'userid' => $row['ID'],
+                    'usertype' => $row['usertype']
+                ];
             }
         }
-
         return false;
     }
 
@@ -139,11 +142,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (count($errors) == 0) {
             // Validation successful
             if ($user->userExists($username)) {
-                $usertype = $user->login($username, $password);
-                if ($usertype) {
+                $userDetails = $user->login($username, $password);
+                if ($userDetails) {
                     // Set session variable and redirect
                     $_SESSION['username'] = $username;
-                    $_SESSION['usertype'] = $usertype; // Store usertype in session
+                    $_SESSION['userid'] = $userDetails['userid']; // Store userid in session
+                    $_SESSION['usertype'] = $userDetails['usertype']; // Store usertype in session
 
                     header("Location: index.php");
                     exit();

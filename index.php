@@ -22,8 +22,16 @@ include('television.php');
 // Create an instance of the Television class
 $tv = new Television($dbc);
 
+// Filter list variables
+$searchQuery = $_GET['searchQuery'] ?? '';
+$stockFilter = $_GET['stockFilter'] ?? '';
+$sortOrder = $_GET['sortOrder'] ?? '';
+
+// Fetch TVs from db
+$tvList = $tv->getAllTVs($searchQuery, $stockFilter, $sortOrder);
+
 // Fetch all TVs
-$tvList = $tv->getAllTVs();
+// $tvList = $tv->getAllTVs($searchQuery, $stockFilter, $sortOrder);
 
 // Check if there are any TVs in result set
 $hasRecords = count($tvList) > 0;
@@ -48,14 +56,17 @@ $dbc->close();
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container nav-custom-container">
-            <a class="navbar-brand" href="#">Minions TVstore</a>
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <a class="navbar-brand" href="#">
+                <img src="./public/images/logo.png" class="logo" />
+                Minions TVstore
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNavr">
                 <ul class="navbar-nav ms-auto nav-items">
                     <li class="nav-item">
                         <a class="nav-link" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="cart.php">Cart</a>
+                        <a class="nav-link" href="cart_page.php">Cart</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">Logout</a>
@@ -81,6 +92,46 @@ $dbc->close();
     </div>
 
     <div class="container mb-5">
+
+        <!-- Filter container -->
+        <div class="container mb-4">
+            <form id="filter-products-form" method="GET" action="index.php" class="form-inline justify-content-end">
+                <!-- Search Field -->
+                <div class="form-group mx-2 filter-field">
+                    <label for="searchQuery">Search</label>
+                    <input type="text" name="searchQuery" class="form-control" placeholder="Type to search..." value="<?= htmlspecialchars($searchQuery) ?>">
+                </div>
+
+                <!-- Stock Filter Dropdown -->
+                <div class="form-group mx-2 filter-field">
+                    <label for="stockFilter">Stock</label>
+                    <select name="stockFilter" class="form-control">
+                        <option value="" <?= empty($_GET['stockFilter']) ? 'selected' : '' ?>>None</option> <!-- None selected by default -->
+                        <option value="instock" <?= ($_GET['stockFilter'] ?? '') === 'instock' ? 'selected' : '' ?>>In Stock</option>
+                        <option value="preorder" <?= ($_GET['stockFilter'] ?? '') === 'preorder' ? 'selected' : '' ?>>Pre-Order</option>
+                    </select>
+                </div>
+
+                <!-- Sort By Dropdown -->
+                <div class="form-group mx-2 filter-field">
+                    <label for="sortOrder">Sort by</label>
+                    <select name="sortOrder" class="form-control">
+                        <option value="" <?= empty($_GET['sortOrder']) ? 'selected' : '' ?>>None</option>
+                        <option value="price_asc" <?= ($_GET['sortOrder'] ?? '') === 'price_asc' ? 'selected' : '' ?>>Price: Low to High</option>
+                        <option value="price_desc" <?= ($_GET['sortOrder'] ?? '') === 'price_desc' ? 'selected' : '' ?>>Price: High to Low</option>
+                    </select>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary mx-2">Filter</button>
+
+                <!-- Clear Filter Button -->
+                <a href="index.php" class="btn btn-secondary mx-2">Clear Filter</a>
+
+            </form>
+        </div>
+
+        
         <?php if ($hasRecords): ?>
             <!-- TVs list -->
             <div class="row tv-container">

@@ -147,12 +147,49 @@ class Television
         return $result->fetch_assoc();
     }
 
-    // Get all TVs from gb
-    public function getAllTVs()
+    // Get all TVs from db with filter conditions
+    public function getAllTVs($searchQuery, $stockFilter, $sortOrder)
     {
+
         $query = "SELECT * FROM Products";
+        $whereClause = ""; // String to hold filter conditions
+
+        // 1. Search filter on Model, Description or Brand column
+        if (!empty($searchQuery)) {
+            $searchQueryEscaped = $this->dbc->real_escape_string($searchQuery);
+            $whereClause .= "(Model LIKE '%$searchQueryEscaped%' 
+                              OR Description LIKE '%$searchQueryEscaped%' 
+                              OR Brand LIKE '%$searchQueryEscaped%')";
+        }
+
+        // 2. Add condition for stockFilter
+        if (!empty($stockFilter)) {
+            if (!empty($whereClause)) {
+                $whereClause .= " AND ";
+            }
+            $whereClause .= "Stock = '" . $this->dbc->real_escape_string($stockFilter) . "'";
+        }
+
+        // Append WHERE clause to the query if any conditions exist
+        if (!empty($whereClause)) {
+            $query .= " WHERE " . $whereClause;
+        }
+
+        // 3. Apply sorting based on sortOrder
+        switch ($sortOrder) {
+            case 'price_asc':
+                $query .= " ORDER BY Price ASC";
+                break;
+            case 'price_desc':
+                $query .= " ORDER BY Price DESC";
+                break;
+            default:
+                // No sorting
+                break;
+        }
+
+        // Execute query
         $result = $this->dbc->query($query);
-        
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
