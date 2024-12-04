@@ -5,10 +5,10 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
-
 // Include the file that initializes the database connection.
 include('dbinit.php');
-include('Television.php'); // Include the TV class
+include('television.php'); // Include the TV class
+include('imgur_api_handler.php'); // Include script for Imgur Image API handler
 
 // Initializing variables for form values and error messages.
 $tvModel = '';
@@ -19,6 +19,7 @@ $price = '';
 $tvImage = '';
 $success = false;
 $error = '';
+$imgUploadError = '';
 
 // Array to store field-specific error messages.
 $fieldErrors = [
@@ -26,7 +27,8 @@ $fieldErrors = [
     'tvBrand' => '',
     'tvDescription' => '',
     'tvStock' => '',
-    'price' => ''
+    'price' => '',
+    'tvImage' => ''
 ];
 
 // Check if the form is submitted via POST method.
@@ -37,9 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tvDescription = mysqli_real_escape_string($dbc, trim($_POST['tvDescription']));
     $tvStock = mysqli_real_escape_string($dbc, trim($_POST['tvStock']));
     $price = mysqli_real_escape_string($dbc, trim($_POST['Price']));
-    $tvImage = mysqli_real_escape_string($dbc, trim($_POST['tvImage']));
+    $tvImage = ''; // Default value
 
-    // Validating inputs and handling errors.
+    // Validating inputs and handling errors
     if (empty($tvModel)) {
         $fieldErrors['tvModel'] = "Model is required.";
     }
@@ -55,32 +57,60 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($price) || !is_numeric($price) || $price <= 0) {
         $fieldErrors['price'] = "Price is required and must be a positive number.";
     }
+    if (isset($_FILES['tvImage']) && $_FILES['tvImage']['error'] == UPLOAD_ERR_OK) {
+        $imgName = $_FILES['tvImage']['name'];
+        $fileType = pathinfo($imgName, PATHINFO_EXTENSION); // Get file type
+
+        // Validate file upload formats if image is provided
+        $allowTypes = array('jpg', 'png', 'jpeg');
+        if(!in_array($fileType, $allowTypes)) {
+            $fieldErrors['tvImage'] = "Only image with extensions .jpg, .png or .jpeg allowed.";
+        }
+    }
 
     // If there are no errors, proceed to insert data.
     if (array_filter($fieldErrors) == []) {
+        
+        // Handle image upload with IMGUR REST API
+        if (isset($_FILES['tvImage']) && $_FILES['tvImage']['error'] == UPLOAD_ERR_OK) {
 
-        // Create an instance of the Television class
-        $tv = new Television($dbc);
+            // Call postImageImgur static method from imgur_api_handler
+            $uploadResult = ImgurApiHandler::postImageImgur($_FILES['tvImage']['tmp_name']);
 
-        // Set the values for the TV object
-        $tv->setModel($tvModel);
-        $tv->setBrand($tvBrand);
-        $tv->setDescription($tvDescription);
-        $tv->setStock($tvStock);
-        $tv->setPrice($price);
-        $tv->setImageUrl($tvImage);
-
-        // Call the insertTv method to insert the TV into the database
-        $insertResult = $tv->insertTv();
-
-        if ($insertResult === true) {
-            $success = true;
-            header("Location: index.php");
-            exit();
-        } else {
-            // Display SQL errors
-            $error = $insertResult;
+            if ($uploadResult['success']) {
+                $tvImage = $uploadResult['url']; // Get uploaded image URL
+            } else {
+                $imgUploadError = "Image upload failed: " . $uploadResult['error'];
+            }
         }
+
+        // Proceed with insert if image upload is successful
+        if(empty($imgUploadError)) {
+
+            // Create an instance of the Television class
+            $tv = new Television($dbc);
+    
+            // Set the values for the TV object
+            $tv->setModel($tvModel);
+            $tv->setBrand($tvBrand);
+            $tv->setDescription($tvDescription);
+            $tv->setStock($tvStock);
+            $tv->setPrice($price);
+            $tv->setImageUrl($tvImage);
+    
+            // Call the insertTv method to insert the TV into the database
+            $insertResult = $tv->insertTv();
+    
+            if ($insertResult === true) {
+                $success = true;
+                header("Location: index.php");
+                exit();
+            } else {
+                // Display SQL errors
+                $error = $insertResult;
+            }
+        }
+
     } else {
         $error = "Please fix the following errors:";
     }
@@ -147,7 +177,7 @@ $dbc->close();
                         <?php endif; ?>
 
                         <!-- Form starts here -->
-                        <form name="newTVForm" method="POST" action="<?= htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+                        <form name="newTVForm" method="POST" action="<?= htmlspecialchars($_SERVER['PHP_SELF']); ?>" enctype="multipart/form-data">
                             <div class="form-row">
                                 <!-- TV Model Field -->
                                 <div class="form-group col-md-6">
@@ -184,22 +214,18 @@ $dbc->close();
                                     <small class="text-danger"><?= htmlspecialchars($fieldErrors['price']) ?></small>
                                 </div>
                             </div>
-                            <div class="form-row">
+                            <div class="form-row align-items-end">
                                 <!-- TV Image Field -->
                                 <div class="form-group col-md-6">
-                                    <label for="tvImage">Image</label>
-                                    <input type="text" name="tvImage" class="form-control" id="tvImage" value="<?= htmlspecialchars($tvImage) ?>">
+                                    <label for="tvImage">Upload Image</label>
+                                    <input type="file" name="tvImage" class="form-control-file" id="tvImage">
+                                    <small class="text-danger"><?= htmlspecialchars($fieldErrors['tvImage']) ?></small>
                                 </div>
-                                <!-- Submit Button -->
-                                <div class="form-group col-md-6">
-                                    <!-- <button type="submit" class="btn btn-success">Add TV</button>
-                                    <a href="index.php" class="btn btn-secondary">Back to Home</a> TODO -->
+                                <!-- Submit and Back Buttons -->
+                                <div class="form-group col-md-6 d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-success">Add TV</button>
+                                    <a href="index.php" class="btn btn-secondary ml-2">Back to Home</a>
                                 </div>
-                            </div>
-                            <!-- Submit Button -->
-                            <div class="form-group text-right">
-                                <button type="submit" class="btn btn-success">Add TV</button>
-                                <a href="index.php" class="btn btn-secondary">Back to Home</a>
                             </div>
                         </form>
                     </div>

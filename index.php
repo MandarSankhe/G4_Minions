@@ -138,7 +138,7 @@ $dbc->close();
                 <?php
                 foreach ($tvList as $row) {
                     // Fetch image URL, if null -> display default image
-                    $imageURL = empty($row['ImageURL']) ? "./public/images/tv/default.png" : "./public/images/tv/" . htmlspecialchars($row['ImageURL']);
+                    $imageURL = empty($row['ImageURL']) ? "./public/images/tv/default.png" : htmlspecialchars($row['ImageURL']);
                     ?>
                     
                     <div class="col-md-4 mb-4">

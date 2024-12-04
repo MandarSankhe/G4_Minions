@@ -9,6 +9,7 @@ if (!isset($_SESSION['username'])) {
 // This below line is including the file that initializes the database connection.
 include('dbinit.php');
 include('television.php');
+include('imgur_api_handler.php'); // Include the Imgur API handler
 
 // Retrieve the TV ID from the query string (GET request). If not provided, $id will be null.
 $id = $_GET['id'] ?? null;
@@ -24,6 +25,10 @@ if ($id)
     $tv = new Television($dbc);
     $tv->setId($id);  // Set the ID of the TV to be deleted.
 
+    // Retrieve the TV details to get the image URL before deletion
+    $tvDetails = $tv->getTvById($id);
+    $imageUrl = $tvDetails['image'] ?? null;
+
     // This below if block checks if the form has been submitted via POST request or not.
     if ($_SERVER['REQUEST_METHOD'] == 'POST') 
     {
@@ -31,6 +36,16 @@ if ($id)
         $deleteResult = $tv->deleteTv();
 
         if($deleteResult === true) {
+            // If TV record deletion is successful, proceed to delete the image from Imgur
+            if (!empty($imageUrl)) {
+                $imageId = basename($imageUrl); // Extract the image ID from the URL
+                $imgurDeleteResult = ImgurApiHandler::deleteImage($imageId);
+
+                if (!$imgurDeleteResult) {
+                    $error = "Warning: Could not delete the associated image from Imgur.";
+                }
+            }
+
             $success = true;
             header("Location: index.php");
             exit();
