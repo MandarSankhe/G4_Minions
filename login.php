@@ -28,7 +28,7 @@ class User
     // Log in an existing user.
     public function login($username, $password)
     {
-        $query = "SELECT password FROM Users WHERE username = ?";
+        $query = "SELECT ID, password, usertype FROM Users WHERE username = ?";
         $stmt = $this->dbc->prepare($query);
         $stmt->bind_param('s', $username);
         $stmt->execute();
@@ -36,9 +36,15 @@ class User
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            return password_verify($password, $row['password']); // Validate password
+            // Validate password
+            if (password_verify($password, $row['password'])) {
+                // Return userid and usertype if password is valid
+                return [
+                    'userid' => $row['ID'],
+                    'usertype' => $row['usertype']
+                ];
+            }
         }
-
         return false;
     }
 
@@ -136,9 +142,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (count($errors) == 0) {
             // Validation successful
             if ($user->userExists($username)) {
-                if ($user->login($username, $password)) {
+                $userDetails = $user->login($username, $password);
+                if ($userDetails) {
                     // Set session variable and redirect
                     $_SESSION['username'] = $username;
+                    $_SESSION['userid'] = $userDetails['userid']; // Store userid in session
+                    $_SESSION['usertype'] = $userDetails['usertype']; // Store usertype in session
+
                     header("Location: index.php");
                     exit();
                 } else {
@@ -166,8 +176,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login | Register</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="public/CSS/style.css" rel="stylesheet">
-
-
 </head>
 
 <body>
