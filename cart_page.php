@@ -159,7 +159,7 @@ $finalTotal = $subtotal + $taxAmount;
                         <span>Total Price:</span> 
                         <span class="summary-price total-amount"><?= number_format($finalTotal, 2) ?> CAD</span>
                     </div>
-                    <a href="checkout.php" class="btn btn-success btn-block mt-3">Proceed to Checkout</a>
+                    <a href="checkout_page.php" class="btn btn-success btn-block mt-3">Proceed to Checkout</a>
                 </div>
             </div>
         </div>
