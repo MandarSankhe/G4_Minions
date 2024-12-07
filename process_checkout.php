@@ -34,16 +34,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $dbc->begin_transaction();
     try {
+
         $addressId = insertAddress($dbc, $userId, $inputs);
+
         $orderId = insertOrder($dbc, $userId, $inputs, $finalTotal, $addressId);
+
         insertOrderDetails($dbc, $orderId, $cartItems);
 
         clearCart($dbc, $userId);
-        $dbc->commit();
 
-        header("Location: thank_you.php");
+        $dbc->commit();
+        header("Location: thankyou_page.php?order_id=" . $orderId);
         exit();
     } catch (Exception $e) {
+        var_dump($e);die;
         $dbc->rollback();
         redirectWithError("An error occurred while processing your order. Please try again.");
     }
@@ -65,6 +69,7 @@ function sanitizeInputs($data) {
 
 function validateInputs($inputs) {
     $errors = [];
+    $_SESSION['inputs'] = $inputs;
     if (empty($inputs['firstName']) || !preg_match('/^[a-zA-Z\s]{2,}$/', $inputs['firstName'])) {
         $errors['firstName'] = "First Name is required and must be at least 2 characters long, containing only letters and spaces.";
     }
@@ -84,24 +89,21 @@ function validateInputs($inputs) {
         $errors['postalCode'] = "Postal Code must be between 5 and 10 digits.";
     }
 
-    if (empty($inputs['cardNumber']) || !preg_match('/^\d{16}$/', $inputs['cardNumber'])) {
-        $errors['cardNumber'] = "Card number must be a valid 16-digit number.";
-    }
-    if (empty($inputs['expiryDate']) || !preg_match('/^\d{4}-\d{2}$/', $inputs['expiryDate'])) {
-        $errors['expiryDate'] = "Expiry date is required and must be in YYYY-MM format.";
-    }
-    if (empty($inputs['cvv']) || !preg_match('/^\d{3}$/', $inputs['cvv'])) {
-        $errors['cvv'] = "CVV must be a valid 3-digit number.";
-    }
-
+    // if (empty($inputs['cardNumber']) || !preg_match('/^\d{16}$/', $inputs['cardNumber'])) {
+    //     $errors['cardNumber'] = "Card number must be a valid 16-digit number.";
+    // }
+    // if (empty($inputs['expiryDate']) || !preg_match('/^\d{4}-\d{2}$/', $inputs['expiryDate'])) {
+    //     $errors['expiryDate'] = "Expiry date is required and must be in YYYY-MM format.";
+    // }
+    // if (empty($inputs['cvv']) || !preg_match('/^\d{3}$/', $inputs['cvv'])) {
+    //     $errors['cvv'] = "CVV must be a valid 3-digit number.";
+    // }
 
     return $errors;
 }
 
 function insertAddress($dbc, $userId, $inputs) {
-    $query = "
-        INSERT INTO addresses (user_id, type, street_address, city, state, postal_code, country) 
-        VALUES (?, 'shipping', ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO `addresses` (user_id,street_address, city, state, postal_code, country) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $dbc->prepare($query);
     if (!$stmt) throw new Exception("Prepare failed for insertAddress: " . $dbc->error);
     $stmt->bind_param(
@@ -118,26 +120,35 @@ function insertAddress($dbc, $userId, $inputs) {
 }
 
 function insertOrder($dbc, $userId, $inputs, $total, $addressId) {
-    $query = "
-        INSERT INTO `order` 
-        (userid, date, total, first_name, last_name, shipping_address_id) 
-        VALUES (?, NOW(), ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO `order` (userid, date, total, first_name, last_name, shipping_address_id, email, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $dbc->prepare($query);
-    if (!$stmt) throw new Exception("Prepare failed for insertOrder: " . $dbc->error);
+    if (!$stmt) {
+        throw new Exception("Prepare failed for insertOrder: " . $dbc->error);
+    }
+
+    $currentDateTime = date('Y-m-d H:i:s');
     $stmt->bind_param(
-        "idsssi",
+        "idsssiss",
         $userId,
+        $currentDateTime,
         $total,
         $inputs['firstName'],
         $inputs['lastName'],
-        $addressId
+        $addressId,
+        $inputs['email'],
+        $inputs['phone']
     );
-    if (!$stmt->execute()) throw new Exception("Execute failed for insertOrder: " . $stmt->error);
+
+    if (!$stmt->execute()) {
+        throw new Exception("Execute failed for insertOrder: " . $stmt->error);
+    }
+
     return $dbc->insert_id;
 }
 
+
 function insertOrderDetails($dbc, $orderId, $cartItems) {
-    $query = "INSERT INTO orderDetail (OrderID, productID, quantity) VALUES (?, ?, ?)";
+    $query = "INSERT INTO `orderDetail` (OrderID, productID, quantity) VALUES (?, ?, ?)";
     $stmt = $dbc->prepare($query);
     if (!$stmt) throw new Exception("Prepare failed for insertOrderDetails: " . $dbc->error);
 
