@@ -38,12 +38,16 @@ CREATE TABLE IF NOT EXISTS Cart (
 );
 
 -- Create the Order table
-CREATE TABLE IF NOT EXISTS `Order` (
+CREATE TABLE IF NOT EXISTS Order (
     OrderID INT AUTO_INCREMENT PRIMARY KEY,
     userid INT NOT NULL,
     date DATETIME NOT NULL,
     total DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (userid) REFERENCES Users(ID)
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    shipping_address_id INT NOT NULL,
+    FOREIGN KEY (userid) REFERENCES Users(ID),
+    FOREIGN KEY (shipping_address_id) REFERENCES Addresses(ID)
 );
 
 -- Create the OrderDetail table
@@ -55,6 +59,22 @@ CREATE TABLE IF NOT EXISTS OrderDetail (
     FOREIGN KEY (OrderID) REFERENCES `Order`(OrderID),
     FOREIGN KEY (productID) REFERENCES Products(ID)
 );
+
+
+-- Create the Address Table
+CREATE TABLE IF NOT EXISTS Addresses (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    street_address VARCHAR(255) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES Users(ID)
+);
+
+
+
 
 -- Insert tv data in products table 
 INSERT INTO `products` (`Model`, `Brand`, `Description`, `Stock`, `Price`, `ImageURL`) VALUES
