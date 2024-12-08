@@ -5,7 +5,7 @@ session_start();
 include('dbinit.php');
 include('Cart.php');
 
-$userId = '';
+$userId = null;
 $usertype = '';
 
 if (isset($_SESSION['userid'])) {
@@ -63,7 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Calculate the cart count
-$cart = new Cart($dbc);
 $cartCount = $cart-> getCartCountFromCookie();
 
 ?>
