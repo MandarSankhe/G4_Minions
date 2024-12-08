@@ -1,8 +1,8 @@
 <?php
 session_start(); 
 
-// Redirect to login if the user is not logged in
-if (!isset($_SESSION['userid'])) {
+// Redirect to login if the user is not logged in or is admin (admin cannot view order history page)
+if (!isset($_SESSION['userid']) || ($_SESSION['usertype'] ?? null) == 'admin') {
     header("Location: login.php");
     exit();
 }

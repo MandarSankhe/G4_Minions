@@ -1,13 +1,11 @@
 <?php
 session_start(); 
 
+$userId = '';
+
 // Fetch user ID from session
 if (isset($_SESSION['userid'])) {
     $userId = $_SESSION['userid'];
-} else {
-    // Redirect to login page if the user is not logged in
-    header("Location: login.php");
-    exit();
 }
 
 // Include necessary files
@@ -82,9 +80,26 @@ $finalTotal = $subtotal + $taxAmount;
                     <li class="nav-item">
                         <a class="nav-link" href="cart_page.php">Cart</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="logout.php">Logout</a>
-                    </li>
+
+                    <!-- Display Order history if user is logged in -->
+                    <?php if(!empty($userId)) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="order_history.php">Order History</a>
+                        </li>
+                    <?php endif; ?>
+                    <!-- Display login link if user is not logged in -->
+                    <?php if(empty($userId)) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.php">Login</a>
+                        </li>
+                    <?php endif; ?>
+
+                    <!-- Display logout link if user is logged in -->
+                    <?php if(!empty($userId)) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="logout.php">Logout</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
@@ -103,7 +118,7 @@ $finalTotal = $subtotal + $taxAmount;
                         <div class="cart-card">
                             <?php
                                 // Fetch image URL, if null -> display default image
-                                $imageURL = empty($item['ImageURL']) ? "./public/images/tv/default.png" : "./public/images/tv/" . htmlspecialchars($item['ImageURL']);
+                                $imageURL = empty($item['ImageURL']) ? "./public/images/tv/default.png" : htmlspecialchars($item['ImageURL']);
                             ?>
                             <img src="<?= $imageURL ?>" alt="TV Image">
                             <div class="cart-card-details">
