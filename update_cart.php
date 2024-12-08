@@ -2,14 +2,12 @@
 // Start the session
 session_start();
 
-// Redirect if the user is not logged in
-if (!isset($_SESSION['userid'])) {
-    header("Location: login.php");
-    exit();
-}
+$userID = '';
 
-// Get the user ID from the session
-$userID = $_SESSION['userid'];
+if (isset($_SESSION['userid'])) {
+    // Get the user ID from the session
+    $userID = $_SESSION['userid'];
+}
 
 // Include the database connection and Cart class files
 include('dbinit.php');
