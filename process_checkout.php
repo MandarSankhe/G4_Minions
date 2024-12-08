@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $inputs = sanitizeInputs($_POST);
     $errors = validateInputs($inputs);
 
+
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
         header("Location: checkout_page.php");
@@ -44,10 +45,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         clearCart($dbc, $userId);
 
         $dbc->commit();
+
+        unset($_SESSION['inputs']);
+        unset($_SESSION['errors']);
+
+
         header("Location: thankyou_page.php?order_id=" . $orderId);
         exit();
     } catch (Exception $e) {
-        var_dump($e);die;
         $dbc->rollback();
         redirectWithError("An error occurred while processing your order. Please try again.");
     }
@@ -64,8 +69,12 @@ function sanitizeInputs($data) {
         'state' => htmlspecialchars(trim($data['state'])),
         'postalCode' => htmlspecialchars(trim($data['postal_code'])),
         'country' => htmlspecialchars(trim($data['country'])),
+        'cardNumber' => htmlspecialchars(trim($data['cardNumber'])),
+        'expiryDate' => htmlspecialchars(trim($data['expiryDate'])),
+        'cvv' => htmlspecialchars(trim($data['cvv'])),
     ];
 }
+
 
 function validateInputs($inputs) {
     $errors = [];
@@ -89,15 +98,15 @@ function validateInputs($inputs) {
         $errors['postalCode'] = "Postal Code must be between 5 and 10 digits.";
     }
 
-    // if (empty($inputs['cardNumber']) || !preg_match('/^\d{16}$/', $inputs['cardNumber'])) {
-    //     $errors['cardNumber'] = "Card number must be a valid 16-digit number.";
-    // }
-    // if (empty($inputs['expiryDate']) || !preg_match('/^\d{4}-\d{2}$/', $inputs['expiryDate'])) {
-    //     $errors['expiryDate'] = "Expiry date is required and must be in YYYY-MM format.";
-    // }
-    // if (empty($inputs['cvv']) || !preg_match('/^\d{3}$/', $inputs['cvv'])) {
-    //     $errors['cvv'] = "CVV must be a valid 3-digit number.";
-    // }
+    if (empty($inputs['cardNumber']) || !preg_match('/^\d{16}$/', $inputs['cardNumber'])) {
+        $errors['cardNumber'] = "Card number must be a valid 16-digit number.";
+    }
+    if (empty($inputs['expiryDate']) || !preg_match('/^\d{4}-\d{2}$/', $inputs['expiryDate'])) {
+        $errors['expiryDate'] = "Expiry date is required and must be in YYYY-MM format.";
+    }
+    if (empty($inputs['cvv']) || !preg_match('/^\d{3}$/', $inputs['cvv'])) {
+        $errors['cvv'] = "CVV must be a valid 3-digit number.";
+    }
 
     return $errors;
 }
@@ -120,17 +129,15 @@ function insertAddress($dbc, $userId, $inputs) {
 }
 
 function insertOrder($dbc, $userId, $inputs, $total, $addressId) {
-    $query = "INSERT INTO `order` (userid, date, total, first_name, last_name, shipping_address_id, email, phone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $query = "INSERT INTO `order` (userid, total, first_name, last_name, shipping_address_id, email, phone) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $dbc->prepare($query);
     if (!$stmt) {
         throw new Exception("Prepare failed for insertOrder: " . $dbc->error);
     }
 
-    $currentDateTime = date('Y-m-d H:i:s');
     $stmt->bind_param(
-        "idsssiss",
+        "isssiss",
         $userId,
-        $currentDateTime,
         $total,
         $inputs['firstName'],
         $inputs['lastName'],

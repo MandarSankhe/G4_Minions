@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Fetch order and customer details
     $stmt = $dbc->prepare("
-        SELECT o.OrderID, o.date, o.total, o.first_name, o.last_name, a.street_address, a.city, a.state, a.postal_code, a.country
+        SELECT o.OrderID, o.date, o.total, o.first_name, o.last_name, o.email, o.phone, a.street_address, a.city, a.state, a.postal_code, a.country
         FROM `order` o
         JOIN users u ON o.userid = u.ID
         JOIN addresses a ON o.shipping_address_id = a.ID
@@ -98,6 +98,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $pdf->Cell(40, 10, "Name:", 1, 0, 'L', true);
     $pdf->Cell(150, 10, "{$orderData['first_name']} {$orderData['last_name']}", 1, 1, 'L', true);
+
+    
+    $pdf->Cell(40, 10, "Email:", 1, 0, 'L', true);
+    $pdf->Cell(150, 10, $orderData['email'], 1, 1, 'L', true);
+
+    
+    $pdf->Cell(40, 10, "Phone:", 1, 0, 'L', true);
+    $pdf->Cell(150, 10, $orderData['phone'], 1, 1, 'L', true);
 
     $pdf->Cell(40, 10, "Shipping Address:", 1, 0, 'L', true);
     $pdf->Cell(150, 10, "{$orderData['street_address']}, {$orderData['city']}, {$orderData['state']} - {$orderData['postal_code']}, {$orderData['country']}", 1, 1, 'L', true);
