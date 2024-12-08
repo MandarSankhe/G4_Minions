@@ -69,6 +69,9 @@ $dbc->close();
                         <a class="nav-link" href="cart_page.php">Cart</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="order_history.php">Order History</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="logout.php">Logout</a>
                     </li>
                 </ul>
