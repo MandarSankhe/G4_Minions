@@ -113,14 +113,11 @@ class Cart
             // Return all products from session's cart details for unauthenticated users
             if (!empty($_SESSION['cart'])) {
                 foreach ($_SESSION['cart'] as $tvId => $quantity) {
-                    // Fetch product details from the database
-                    $query = "SELECT ID, Model, Brand, Price, ImageURL FROM Products WHERE ID = ?";
-                    $stmt = $this->dbc->prepare($query);
-                    $stmt->bind_param("i", $tvId);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
+                    // Fetch product details from the database, use the getTvByID method from Television class
+                    $tv = new Television($this->dbc);
+                    $product = $tv->getTvById($tvId);
 
-                    if ($product = $result->fetch_assoc()) {
+                    if($product) {
                         $product['quantity'] = $quantity;
                         $cartItems[] = $product;
                     }
