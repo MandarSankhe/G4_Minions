@@ -168,4 +168,36 @@ class Cart
             unset($_SESSION['cart']);
         }
     }
+
+    function getCartCountFromCookie() {
+        // Check if the user is logged in
+        if ($this->userId) {
+            // Get the count of items in the user's cart from the database
+            $query = "SELECT SUM(quantity) as totalQuantity FROM Cart WHERE userid = ?";
+            $stmt = $this->dbc->prepare($query);
+            $stmt->bind_param("i", $this->userId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+    
+            $cartCount = $row['totalQuantity'] ?? 0; // Default to 0 if no items found
+        } else {
+            // Use session cart for unauthenticated users
+            if (isset($_SESSION['cart'])) {
+                $cartCount = 0;
+                foreach ($_SESSION['cart'] as $quantity) {
+                    $cartCount += $quantity; // Sum up all quantities
+                }
+            } else {
+                $cartCount = 0; // No items in cart
+            }
+        }
+    
+        // Set the cookie with the cart count, valid for 30 days
+        setcookie('cartCount', $cartCount, time() + (86400 * 30), "/");
+    
+        return $cartCount;
+    }
+    
+    
 }

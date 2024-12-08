@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+// Include necessary files
+include('dbinit.php');
+include('Cart.php');
+
 $userId = '';
 $usertype = '';
 
@@ -14,9 +18,7 @@ if (isset($_SESSION['userid'])) {
 // Check if the user is an admin
 $isAdmin = $usertype == 'admin';
 
-// Include necessary files
-include('dbinit.php');
-include('Cart.php');
+
 
 // Initialize the Cart class
 $cart = new Cart($dbc, $userId);
@@ -59,6 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 }
+
+// Calculate the cart count
+$cart = new Cart($dbc);
+$cartCount = $cart-> getCartCountFromCookie();
+
 ?>
 
 <!DOCTYPE html>
@@ -87,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- Do not display cart nav link for admin -->
                     <?php if(!$isAdmin) : ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="cart_page.php">Cart</a>
+                            <a class="nav-link" href="cart_page.php">Cart (<?= $cartCount ?>)</a>
                         </li>
                     <?php endif; ?>
 
