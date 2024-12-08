@@ -69,6 +69,9 @@ $dbc->close();
                         <a class="nav-link" href="cart_page.php">Cart</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="order_history.php">Order History</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="logout.php">Logout</a>
                     </li>
                 </ul>
@@ -142,30 +145,33 @@ $dbc->close();
                     ?>
                     
                     <div class="col-md-4 mb-4">
-                        <div class="card h-100">
-                            <!-- TV image -->
-                            <img src="<?= $imageURL ?>" class="card-img-top" alt="TV Image">
-                            <div class="card-body">
-                                <h5 class="card-title"><?= htmlspecialchars($row['Model']) ?></h5>
-                                <h6 class="card-subtitle mb-2 text-muted"><?= htmlspecialchars($row['Brand']) ?></h6>
-                                <p class="card-text description-column-products"><?= htmlspecialchars($row['Description']) ?></p>
-                                <p class="card-text">
-                                    <?= $row['Stock'] === 'instock' ? 'In Stock' : 'Pre-Order' ?><br>
-                                    <strong>$<?= number_format($row['Price'], 2) ?></strong>
-                                </p>
+                        <a href="product_details.php?id=<?= $row['ID'] ?>" class="text-decoration-none text-dark">
+                            <div class="card h-100">
+                                <!-- TV image -->
+                                <img src="<?= $imageURL ?>" class="card-img-top" alt="TV Image">
+                                <div class="card-body">
+                                    <h5 class="card-title"><?= htmlspecialchars($row['Model']) ?></h5>
+                                    <h6 class="card-subtitle mb-2 text-muted"><?= htmlspecialchars($row['Brand']) ?></h6>
+                                    <p class="card-text description-column-products"><?= htmlspecialchars($row['Description']) ?></p>
+                                    <p class="card-text">
+                                        <?= $row['Stock'] === 'instock' ? 'In Stock' : 'Pre-Order' ?><br>
+                                        <strong>$<?= number_format($row['Price'], 2) ?></strong>
+                                    </p>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <!-- Conditionally display buttons for admin and customers -->
+                                    <?php if ($isAdmin): ?>
+                                        <!-- Show "Update" and "Delete" buttons for admin -->
+                                        <a href="update_data.php?id=<?= $row['ID'] ?>" class="btn btn-primary btn-sm card-tv-actions">Update</a>
+                                        <a href="delete_data.php?id=<?= $row['ID'] ?>" class="btn btn-danger btn-sm card-tv-actions">Delete</a>
+                                    <?php else: ?>
+                                        <!-- Show "Add to Cart" button for customers -->
+                                        <a href="product_details.php?id=<?= $row['ID'] ?>" class="btn btn-primary btn-sm card-tv-actions">View Details</a>
+                                        <a href="update_cart.php?id=<?= $row['ID'] ?>" class="btn btn-primary btn-sm card-tv-actions">Add to Cart</a>
+                                    <?php endif; ?>
+                                </div>
                             </div>
-                            <div class="card-footer text-center">
-                                <!-- Conditionally display buttons for admin and customers -->
-                                <?php if ($isAdmin): ?>
-                                    <!-- Show "Update" and "Delete" buttons for admin -->
-                                    <a href="update_data.php?id=<?= $row['ID'] ?>" class="btn btn-primary btn-sm card-tv-actions">Update</a>
-                                    <a href="delete_data.php?id=<?= $row['ID'] ?>" class="btn btn-danger btn-sm card-tv-actions">Delete</a>
-                                <?php else: ?>
-                                    <!-- Show "Add to Cart" button for customers -->
-                                    <a href="update_cart.php?id=<?= $row['ID'] ?>" class="btn btn-primary btn-sm card-tv-actions">Add to Cart</a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
+                        </a>
                     </div>
                     
                 <?php } ?>
