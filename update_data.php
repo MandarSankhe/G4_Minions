@@ -240,7 +240,7 @@ $dbc->close();
                                     </div>
                                     <!-- Submit and Back Buttons -->
                                     <div class="form-group col-md-6 d-flex justify-content-end">
-                                        <button type="submit" class="btn btn-success">Add TV</button>
+                                        <button type="submit" class="btn btn-success">Update TV</button>
                                         <a href="index.php" class="btn btn-secondary ml-2">Back to Home</a>
                                     </div>
                                 </div>
