@@ -9,6 +9,7 @@ if (!isset($_SESSION['userid']) || ($_SESSION['usertype'] ?? null) == 'admin') {
 
 // Include the database connection
 include('dbinit.php');
+include('cart.php');
 
 // Define the OrderHistory class
 class OrderHistory
@@ -67,6 +68,10 @@ $orderHistoryObj = new OrderHistory($dbc, $_SESSION['userid']);
 // Fetch order history
 $orderHistory = $orderHistoryObj->fetchOrderHistory();
 
+// Calculate the cart count
+$cart = new Cart($dbc, $_SESSION['userid']);
+$cartCount = $cart-> getCartCountFromCookie();
+
 // Close the database connection
 $dbc->close();
 ?>
@@ -93,7 +98,7 @@ $dbc->close();
                         <a class="nav-link" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="cart_page.php">Cart</a>
+                        <a class="nav-link" href="cart_page.php">Cart (<?= $cartCount ?>)</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="order_history.php">Order History</a>

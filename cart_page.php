@@ -1,7 +1,7 @@
 <?php
 session_start(); 
 
-$userId = '';
+$userId = null;
 
 // Fetch user ID from session
 if (isset($_SESSION['userid'])) {
@@ -52,6 +52,8 @@ $subtotal = $totalPrice;
 $taxRate = 0.10; // 10% tax
 $taxAmount = $subtotal * $taxRate;
 $finalTotal = $subtotal + $taxAmount;
+
+$cartCount = $cart-> getCartCountFromCookie();
 ?>
 
 <!DOCTYPE html>
@@ -78,7 +80,7 @@ $finalTotal = $subtotal + $taxAmount;
                         <a class="nav-link" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="cart_page.php">Cart</a>
+                        <a class="nav-link" href="cart_page.php">Cart (<?= $cartCount ?>)</a>
                     </li>
 
                     <!-- Display Order history if user is logged in -->
