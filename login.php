@@ -149,7 +149,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['userid'] = $userDetails['userid']; // Store userid in session
                     $_SESSION['usertype'] = $userDetails['usertype']; // Store usertype in session
 
-                    header("Location: index.php");
+                    // Handle case where user logged in after being redirected from cart_auth.php
+                    // Check if the flag redirect_to_cart_auth_after_login is set and redirect to cart_auth.php
+                    if (isset($_SESSION['redirect_to_cart_auth_after_login']) && $_SESSION['redirect_to_cart_auth_after_login'] === true) {
+                        // Redirect to cart_auth.php
+                        header("Location: cart_auth.php");
+                    } else {
+                        // Redirect to index page
+                        header("Location: index.php");
+                    }
                     exit();
                 } else {
                     $feedback = "<div class='alert alert-danger'>Incorrect password. Please try again.</div>";

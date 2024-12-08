@@ -1,10 +1,13 @@
 <?php
 session_start(); 
-// Redirect if the user is not logged in
-if (!isset($_SESSION['username'])) {
+
+// Check if the user is logged in and is an admin
+if (!isset($_SESSION['username']) || ($_SESSION['usertype'] ?? null) !== 'admin') {
+    // Redirect to login if not logged in or not an admin
     header("Location: login.php");
     exit();
 }
+
 // Include the file that initializes the database connection.
 include('dbinit.php');
 include('television.php'); // Include the TV class
@@ -147,9 +150,6 @@ $dbc->close();
                 <ul class="navbar-nav ms-auto nav-items">
                     <li class="nav-item">
                         <a class="nav-link" href="index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="cart_page.php">Cart</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">Logout</a>
