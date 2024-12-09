@@ -1,13 +1,11 @@
 <?php
 session_start(); 
 
+$userId = null;
+
 // Fetch user ID from session
 if (isset($_SESSION['userid'])) {
     $userId = $_SESSION['userid'];
-} else {
-    // Redirect to login page if the user is not logged in
-    header("Location: login.php");
-    exit();
 }
 
 // Include necessary files
@@ -54,6 +52,8 @@ $subtotal = $totalPrice;
 $taxRate = 0.10; // 10% tax
 $taxAmount = $subtotal * $taxRate;
 $finalTotal = $subtotal + $taxAmount;
+
+$cartCount = $cart-> getCartCountFromCookie();
 ?>
 
 <!DOCTYPE html>
@@ -65,6 +65,7 @@ $finalTotal = $subtotal + $taxAmount;
     <title>Cart</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="public/CSS/style.css">
+
 </head>
 
 <body>
@@ -74,17 +75,38 @@ $finalTotal = $subtotal + $taxAmount;
                 <img src="./public/images/logo.png" class="logo" />
                 Minions TVstore
             </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto nav-items">
                     <li class="nav-item">
                         <a class="nav-link" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="cart_page.php">Cart</a>
+                        <a class="nav-link" href="cart_page.php">Cart (<?= $cartCount ?>)</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="logout.php">Logout</a>
-                    </li>
+
+                    <!-- Display Order history if user is logged in -->
+                    <?php if(!empty($userId)) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="order_history.php">Order History</a>
+                        </li>
+                    <?php endif; ?>
+                    <!-- Display login link if user is not logged in -->
+                    <?php if(empty($userId)) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.php">Login</a>
+                        </li>
+                    <?php endif; ?>
+
+                    <!-- Display logout link if user is logged in -->
+                    <?php if(!empty($userId)) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="logout.php">Logout</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
@@ -103,7 +125,7 @@ $finalTotal = $subtotal + $taxAmount;
                         <div class="cart-card">
                             <?php
                                 // Fetch image URL, if null -> display default image
-                                $imageURL = empty($item['ImageURL']) ? "./public/images/tv/default.png" : "./public/images/tv/" . htmlspecialchars($item['ImageURL']);
+                                $imageURL = empty($item['ImageURL']) ? "./public/images/tv/default.png" : htmlspecialchars($item['ImageURL']);
                             ?>
                             <img src="<?= $imageURL ?>" alt="TV Image">
                             <div class="cart-card-details">

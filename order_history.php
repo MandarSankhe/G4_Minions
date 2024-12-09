@@ -1,14 +1,15 @@
 <?php
 session_start(); 
 
-// Redirect to login if the user is not logged in
-if (!isset($_SESSION['userid'])) {
+// Redirect to login if the user is not logged in or is admin (admin cannot view order history page)
+if (!isset($_SESSION['userid']) || ($_SESSION['usertype'] ?? null) == 'admin') {
     header("Location: login.php");
     exit();
 }
 
 // Include the database connection
 include('dbinit.php');
+include('cart.php');
 
 // Define the OrderHistory class
 class OrderHistory
@@ -67,6 +68,10 @@ $orderHistoryObj = new OrderHistory($dbc, $_SESSION['userid']);
 // Fetch order history
 $orderHistory = $orderHistoryObj->fetchOrderHistory();
 
+// Calculate the cart count
+$cart = new Cart($dbc, $_SESSION['userid']);
+$cartCount = $cart-> getCartCountFromCookie();
+
 // Close the database connection
 $dbc->close();
 ?>
@@ -87,13 +92,17 @@ $dbc->close();
                 <img src="./public/images/logo.png" class="logo" />
                 Minions TVstore
             </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto nav-items">
                     <li class="nav-item">
                         <a class="nav-link" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="cart_page.php">Cart</a>
+                        <a class="nav-link" href="cart_page.php">Cart (<?= $cartCount ?>)</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="order_history.php">Order History</a>

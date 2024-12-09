@@ -1,7 +1,9 @@
 <?php
 session_start(); 
-// Redirect if the user is not logged in
-if (!isset($_SESSION['username'])) {
+
+// Check if the user is logged in and is an admin
+if (!isset($_SESSION['username']) || ($_SESSION['usertype'] ?? null) !== 'admin') {
+    // Redirect to login if not logged in or not an admin
     header("Location: login.php");
     exit();
 }
@@ -158,13 +160,14 @@ $dbc->close();
                 <img src="./public/images/logo.png" class="logo" />
                 Minions TVstore
             </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto nav-items">
                     <li class="nav-item">
                         <a class="nav-link" href="index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="cart_page.php">Cart</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">Logout</a>
@@ -251,6 +254,9 @@ $dbc->close();
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>

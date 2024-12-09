@@ -2,22 +2,23 @@
 // Start the session
 session_start();
 
-// Redirect if the user is not logged in
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();
-}
+$username = '';
+$usertype = '';
+$userid = null;
 
-// Get the username and user type from the session
-$username = $_SESSION['username'];
-$usertype = $_SESSION['usertype'];
+if (isset($_SESSION['username'])) {
+    // Get the username and user type from the session
+    $username = $_SESSION['username'];
+    $usertype = $_SESSION['usertype'];
+    $userid = $_SESSION['userid'];
+}
 
 // Check if the user is an admin
 $isAdmin = $usertype == 'admin';
 
 // Including the file that initializes db connection and TV class.
 include('dbinit.php');
-include('television.php');
+include('cart.php');
 
 // Create an instance of the Television class
 $tv = new Television($dbc);
@@ -30,11 +31,14 @@ $sortOrder = $_GET['sortOrder'] ?? '';
 // Fetch TVs from db
 $tvList = $tv->getAllTVs($searchQuery, $stockFilter, $sortOrder);
 
-// Fetch all TVs
-// $tvList = $tv->getAllTVs($searchQuery, $stockFilter, $sortOrder);
-
 // Check if there are any TVs in result set
 $hasRecords = count($tvList) > 0;
+
+
+// Calculate the cart count
+$cart = new Cart($dbc, $userid);
+$cartCount = $cart-> getCartCountFromCookie();
+
 
 // Closing the database connection.
 $dbc->close();
@@ -60,20 +64,41 @@ $dbc->close();
                 <img src="./public/images/logo.png" class="logo" />
                 Minions TVstore
             </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavr" aria-controls="navbarNavr" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navbarNavr">
                 <ul class="navbar-nav ms-auto nav-items">
                     <li class="nav-item">
                         <a class="nav-link" href="index.php">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="cart_page.php">Cart</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="order_history.php">Order History</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="logout.php">Logout</a>
-                    </li>
+
+                    <!-- Do not display cart nav link for admin -->
+                    <?php if(!$isAdmin) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="cart_page.php">Cart (<?= $cartCount ?>)</a>
+                        </li>
+                    <?php endif; ?>
+
+                    <!-- Display Order history if user is logged in and of type customer (not admin) -->
+                    <?php if(!empty($username) && !$isAdmin) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="order_history.php">Order History</a>
+                        </li>
+                    <?php endif; ?>
+                    <!-- Display login link if user is not logged in -->
+                    <?php if(empty($username)) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.php">Login</a>
+                        </li>
+                    <?php endif; ?>
+
+                    <!-- Display logout link if user is logged in -->
+                    <?php if(!empty($username)) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="logout.php">Logout</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
@@ -84,7 +109,7 @@ $dbc->close();
             <h1 class="display-3">
                 Minions TV Store
             </h1>
-            <h4 class="header-username">Welcome, <?php echo htmlspecialchars($username); ?>!</h4>
+            <h4 class="header-username">Welcome, <?php echo htmlspecialchars(!empty($username) ? $username : 'Guest'); ?>!</h4>
             <!-- Conditional content based on usertype -->
             <?php if ($isAdmin): ?>
                 <a href="insert_data.php" class="btn btn-success btn-lg mt-3">Add New TV</a>

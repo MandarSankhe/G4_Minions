@@ -1,18 +1,24 @@
 <?php
 session_start();
 
-// Redirect to login page if the user is not logged in
-if (!isset($_SESSION['userid'])) {
-    header("Location: login.php");
-    exit();
-}
-
 // Include necessary files
 include('dbinit.php');
 include('Cart.php');
 
-// Fetch user ID from session
-$userId = $_SESSION['userid'];
+$userId = null;
+$usertype = '';
+
+if (isset($_SESSION['userid'])) {
+    // Fetch user ID from session
+    $userId = $_SESSION['userid'];
+    // Get the user type from the session
+    $usertype = $_SESSION['usertype'];
+}
+
+// Check if the user is an admin
+$isAdmin = $usertype == 'admin';
+
+
 
 // Initialize the Cart class
 $cart = new Cart($dbc, $userId);
@@ -55,6 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 }
+
+// Calculate the cart count
+$cartCount = $cart-> getCartCountFromCookie();
+
 ?>
 
 <!DOCTYPE html>
@@ -75,20 +85,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="./public/images/logo.png" class="logo" />
                 Minions TVstore
             </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto nav-items">
                     <li class="nav-item">
                         <a class="nav-link" href="index.php">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="cart_page.php">Cart</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="order_history.php">Order History</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="logout.php">Logout</a>
-                    </li>
+                    <!-- Do not display cart nav link for admin -->
+                    <?php if(!$isAdmin) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="cart_page.php">Cart (<?= $cartCount ?>)</a>
+                        </li>
+                    <?php endif; ?>
+
+                    <!-- Display Order history if user is logged in and of type customer (not admin) -->
+                    <?php if(!empty($userId) && !$isAdmin) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="order_history.php">Order History</a>
+                        </li>
+                    <?php endif; ?>
+                    <!-- Display login link if user is not logged in -->
+                    <?php if(empty($userId)) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.php">Login</a>
+                        </li>
+                    <?php endif; ?>
+
+                    <!-- Display logout link if user is logged in -->
+                    <?php if(!empty($userId)) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="logout.php">Logout</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
@@ -108,21 +139,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h4>$<?= number_format($product['Price'], 2) ?></h4>
                 <p>Availability: <?= $product['Stock'] === 'instock' ? 'In Stock' : 'Pre-Order' ?></p>
 
-                <!-- Quantity and Add to Cart Form -->
-                <form action="" method="POST" class="mt-4">
-                    <div class="form-group">
-                        <label for="quantity">Quantity</label>
-                        <div class="quantity-actions d-inline-flex bg-light align-items-center">
-                            <!-- Decrement Button -->
-                            <button type="submit" name="update_quantity" value="decrement" class="btn btn-primary">-</button>
-                            <input type="hidden" name="quantity" value="<?= htmlspecialchars($quantity) ?>">
-                            <span class="px-3"><?= htmlspecialchars($quantity) ?></span>
-                            <!-- Increment Button -->
-                            <button type="submit" name="update_quantity" value="increment" class="btn btn-primary">+</button>
+                <?php if(!$isAdmin): ?> <!-- Do not display quantity to add to cart for admin (admin will only view product details) -->
+                    <!-- Quantity and Add to Cart Form -->
+                    <form action="" method="POST" class="mt-4">
+                        <div class="form-group">
+                            <label for="quantity">Quantity</label>
+                            <div class="quantity-actions d-inline-flex bg-light align-items-center">
+                                <!-- Decrement Button -->
+                                <button type="submit" name="update_quantity" value="decrement" class="btn btn-primary">-</button>
+                                <input type="hidden" name="quantity" value="<?= htmlspecialchars($quantity) ?>">
+                                <span class="px-3"><?= htmlspecialchars($quantity) ?></span>
+                                <!-- Increment Button -->
+                                <button type="submit" name="update_quantity" value="increment" class="btn btn-primary">+</button>
+                            </div>
                         </div>
-                    </div>
-                    <button type="submit" name="add_to_cart" class="btn btn-success mt-3">Add to Cart</button>
-                </form>
+                        <button type="submit" name="add_to_cart" class="btn btn-success mt-3">Add to Cart</button>
+                    </form>
+                <?php endif; ?>
             </div>
         </div>
     </div>
