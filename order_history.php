@@ -88,7 +88,7 @@ $dbc->close();
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container nav-custom-container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="index.php">
                 <img src="./public/images/logo.png" class="logo" />
                 Minions TVstore
             </a>
