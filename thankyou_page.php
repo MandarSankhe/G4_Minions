@@ -92,7 +92,12 @@
                         <a class="nav-link" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="cart_page.php">Cart (<?= $cartCount ?>)</a>
+                        <a class="nav-link" href="cart_page.php">
+                            Cart 
+                            <?php if ($cartCount > 0) : ?>
+                                <span class="badge badge-danger"><?= $cartCount ?></span>
+                            <?php endif; ?>
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="order_history.php">Order History</a>
