@@ -12,7 +12,7 @@ include('Cart.php');
 // Check if the user is logged in
 if (!isset($_SESSION['userid'])) {
     // User is not logged in
-    $_SESSION['redirect_to_cart_auth_after_login'] = true; // Set flag in session to redirect to cart_auth.php after login 
+    $_SESSION['redirect_to_cart_auth_after_login'] = true; // Set flag in session to redirect to cart_auth.php after login
     header("Location: login.php"); // Redirect to login page
     exit();
 } else {
@@ -32,7 +32,7 @@ if (!isset($_SESSION['userid'])) {
     }
 
     // Redirect to the checkout page
-    header("Location: checkout.php");
+    header("Location: checkout_page.php");
     exit();
 }
 

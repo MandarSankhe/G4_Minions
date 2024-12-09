@@ -37,8 +37,20 @@ CREATE TABLE IF NOT EXISTS Cart (
     FOREIGN KEY (productid) REFERENCES Products(ID)
 );
 
+-- Create the Address Table
+CREATE TABLE IF NOT EXISTS Addresses (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    street_address VARCHAR(255) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES Users(ID)
+);
+
 -- Create the Order table
-CREATE TABLE IF NOT EXISTS Order (
+CREATE TABLE IF NOT EXISTS `Order` (
     OrderID INT AUTO_INCREMENT PRIMARY KEY,
     userid INT NOT NULL,
     date DATETIME NOT NULL,
@@ -46,6 +58,8 @@ CREATE TABLE IF NOT EXISTS Order (
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     shipping_address_id INT NOT NULL,
+    email varchar(100) NOT NULL,
+    phone int(11) NOT NULL,
     FOREIGN KEY (userid) REFERENCES Users(ID),
     FOREIGN KEY (shipping_address_id) REFERENCES Addresses(ID)
 );
@@ -61,17 +75,7 @@ CREATE TABLE IF NOT EXISTS OrderDetail (
 );
 
 
--- Create the Address Table
-CREATE TABLE IF NOT EXISTS Addresses (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    street_address VARCHAR(255) NOT NULL,
-    city VARCHAR(100) NOT NULL,
-    state VARCHAR(100) NOT NULL,
-    postal_code VARCHAR(20) NOT NULL,
-    country VARCHAR(100) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES Users(ID)
-);
+
 
 
 
@@ -85,4 +89,4 @@ INSERT INTO `products` (`Model`, `Brand`, `Description`, `Stock`, `Price`, `Imag
 ('Bravia 3 Smart TV', 'Sony', 'Enjoy stress-free viewing with our 43â€ 4K Ultra HD LED Smart TV, offering vivid visuals, dynamic sound, and all-in-one smart features.', 'instock', 699.99, 'https://i.imgur.com/s6OxlHs.jpeg'),
 ('QLED Smart TV', 'Philips', '4K Display with Dolby Vision and HDR10 for vibrant colors. 150,000+ streaming options on a sleek Roku Smart TV with a borderless design.', 'instock', 1299.99, 'https://i.imgur.com/E6FQg5G.jpeg'),
 ('X77L Google TV', 'Sony', 'Lifelike 4K HDR visuals powered by 4K Processor X1â„¢. 65-inch Google TV with Assistant and upscales HD content to near-4K clarity.', 'instock', 949.00, 'https://i.imgur.com/MhiQTaW.jpeg'),
-('Crystal UHD Smart TV 98-inch', 'Samsung', '98-inch DU9000 4K Smart TV for a cinema-like experience. Vibrant visuals, optimal gaming, smart features for total immersion.', 'preorder', 2298.00, 'https://i.imgur.com/bemZrF7.jpeg'),
+('Crystal UHD Smart TV 98-inch', 'Samsung', '98-inch DU9000 4K Smart TV for a cinema-like experience. Vibrant visuals, optimal gaming, smart features for total immersion.', 'preorder', 2298.00, 'https://i.imgur.com/bemZrF7.jpeg');

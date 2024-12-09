@@ -53,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: thankyou_page.php?order_id=" . $orderId);
         exit();
     } catch (Exception $e) {
+        var_dump($e); die;
         $dbc->rollback();
         redirectWithError("An error occurred while processing your order. Please try again.");
     }
