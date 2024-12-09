@@ -73,6 +73,12 @@ $dbc->close();
                         <a class="nav-link" href="index.php">Home</a>
                     </li>
 
+                    <?php if($isAdmin) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="insert_data.php">Add New TV</a>
+                        </li>
+                    <?php endif; ?>
+
                     <!-- Do not display cart nav link for admin -->
                     <?php if(!$isAdmin) : ?>
                         <li class="nav-item">

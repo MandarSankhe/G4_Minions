@@ -106,6 +106,13 @@ $cartCount = $cart-> getCartCountFromCookie();
                         </li>
                     <?php endif; ?>
 
+                    <!-- Display "Insert new TV" for admin -->
+                    <?php if($isAdmin) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="insert_data.php">Add New TV</a>
+                        </li>
+                    <?php endif; ?>
+
                     <!-- Display Order history if user is logged in and of type customer (not admin) -->
                     <?php if(!empty($userId) && !$isAdmin) : ?>
                         <li class="nav-item">
@@ -131,7 +138,7 @@ $cartCount = $cart-> getCartCountFromCookie();
     </nav>
 
     <div class="container mt-5 bg-light">
-        <div class="row cart-card" style="padding-bottom: 100px;">
+        <div class="row cart-card" style="padding: 50px 0;">
             <!-- Product Image -->
             <div class="col-md-6">
                 <img src="<?= empty($product['ImageURL']) ? "./public/images/tv/default.png" : htmlspecialchars($product['ImageURL']) ?>" alt="<?= htmlspecialchars($product['Model']) ?>" style="width: auto;" class="img-fluid">
