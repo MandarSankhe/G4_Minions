@@ -69,7 +69,7 @@ $cartCount = $cart-> getCartCountFromCookie();
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container nav-custom-container">
             <a class="navbar-brand" href="index.php">
-                <img src="./public/images/logo.png" class="logo" />
+                <img src="./public/images/logo.png" alt="logo" class="logo" />
                 Minions TVstore
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -170,7 +170,7 @@ $cartCount = $cart-> getCartCountFromCookie();
                     </div>
                     <div class="form-group">
                         <label for="cvv">CVV</label>
-                        <input type="text" class="form-control" id="cvv" name="cvv" value="<?= stickyValue('cvv') ?>">
+                        <input type="password" class="form-control" id="cvv" name="cvv" value="<?= stickyValue('cvv') ?>">
                         <?= displayError('cvv') ?>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Pay Now</button>
