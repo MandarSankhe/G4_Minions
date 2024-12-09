@@ -79,7 +79,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container nav-custom-container">
             <a class="navbar-brand" href="index.php">
-                <img src="./public/images/logo.png" class="logo" />
+                <img src="./public/images/logo.png" alt="logo" class="logo" />
                 Minions TVstore
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -114,7 +114,7 @@
         <h1>Thank You!</h1>
         <p>Your order has been placed successfully. We appreciate your trust in us.</p>
 
-        <form method="post" action="generate_invoice.php">
+        <form method="post" action="generate_invoice.php" target="_blank">
            <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order_id, ENT_QUOTES, 'UTF-8'); ?>">
              <button type="submit" class="btn btn-primary">Generate Invoice</button>
         </form>

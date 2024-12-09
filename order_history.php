@@ -89,7 +89,7 @@ $dbc->close();
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container nav-custom-container">
             <a class="navbar-brand" href="index.php">
-                <img src="./public/images/logo.png" class="logo" />
+                <img src="./public/images/logo.png" alt="logo" class="logo" />
                 Minions TVstore
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

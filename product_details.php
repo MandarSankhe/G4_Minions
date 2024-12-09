@@ -82,7 +82,7 @@ $cartCount = $cart-> getCartCountFromCookie();
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container nav-custom-container">
             <a class="navbar-brand" href="index.php">
-                <img src="./public/images/logo.png" class="logo" />
+                <img src="./public/images/logo.png" alt="logo" class="logo" />
                 Minions TVstore
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -130,11 +130,11 @@ $cartCount = $cart-> getCartCountFromCookie();
         </div>
     </nav>
 
-    <div class="container mt-5">
-        <div class="row">
+    <div class="container mt-5 bg-light">
+        <div class="row cart-card" style="padding-bottom: 100px;">
             <!-- Product Image -->
             <div class="col-md-6">
-                <img src="<?= empty($product['ImageURL']) ? "./public/images/tv/default.png" : htmlspecialchars($product['ImageURL']) ?>" alt="<?= htmlspecialchars($product['Model']) ?>" class="img-fluid">
+                <img src="<?= empty($product['ImageURL']) ? "./public/images/tv/default.png" : htmlspecialchars($product['ImageURL']) ?>" alt="<?= htmlspecialchars($product['Model']) ?>" style="width: auto;" class="img-fluid">
             </div>
 
             <!-- Product Details -->
@@ -149,14 +149,15 @@ $cartCount = $cart-> getCartCountFromCookie();
                     <form action="" method="POST" class="mt-4">
                         <div class="form-group">
                             <label for="quantity">Quantity</label>
-                            <div class="quantity-actions d-inline-flex bg-light align-items-center">
-                                <!-- Decrement Button -->
-                                <button type="submit" name="update_quantity" value="decrement" class="btn btn-primary">-</button>
-                                <input type="hidden" name="quantity" value="<?= htmlspecialchars($quantity) ?>">
-                                <span class="px-3"><?= htmlspecialchars($quantity) ?></span>
-                                <!-- Increment Button -->
-                                <button type="submit" name="update_quantity" value="increment" class="btn btn-primary">+</button>
+                            <div class="quantity-actions">
+                                <div>
+                                    <button type="submit" name="update_quantity" value="decrement" class="btn btn-primary">-</button>
+                                    <input type="hidden" name="quantity" value="<?= htmlspecialchars($quantity) ?>">
+                                    <span class="px-3"><?= htmlspecialchars($quantity) ?></span>
+                                    <button type="submit" name="update_quantity" value="increment" class="btn btn-primary">+</button>
+                                </div>
                             </div>
+
                         </div>
                         <button type="submit" name="add_to_cart" class="btn btn-success mt-3">Add to Cart</button>
                     </form>

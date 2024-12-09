@@ -203,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container nav-custom-container">
             <a class="navbar-brand" href="index.php">
-                <img src="./public/images/logo.png" class="logo" />
+                <img src="./public/images/logo.png" alt="logo" class="logo" />
                 Minions TVstore
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -248,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="error field-error-container">
                                     <?php 
                                         if (!empty($errors['login_username_error'])) { 
-                                            echo '<img src="./public/Images/alert-icon.png" class="field-error-icon" />'; 
+                                            echo '<img src="./public/Images/alert-icon.png" alt="alert" class="field-error-icon" />'; 
                                             echo $errors['login_username_error'];
                                         }
                                     ?>
@@ -261,7 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="error field-error-container">
                                     <?php 
                                         if (!empty($errors['login_password_error'])) { 
-                                            echo '<img src="./public/Images/alert-icon.png" class="field-error-icon" />'; 
+                                            echo '<img src="./public/Images/alert-icon.png" alt="alert" class="field-error-icon" />'; 
                                             echo $errors['login_password_error'];
                                         }
                                     ?>
@@ -287,7 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="error field-error-container">
                                     <?php 
                                         if (!empty($errors['reg_username_error'])) { 
-                                            echo '<img src="./public/Images/alert-icon.png" class="field-error-icon" />'; 
+                                            echo '<img src="./public/Images/alert-icon.png" alt="alert" class="field-error-icon" />'; 
                                             echo $errors['reg_username_error'];
                                         }
                                     ?>
@@ -299,7 +299,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="error field-error-container">
                                     <?php 
                                         if (!empty($errors['reg_password_error'])) { 
-                                            echo '<img src="./public/Images/alert-icon.png" class="field-error-icon" />'; 
+                                            echo '<img src="./public/Images/alert-icon.png" alt="alert" class="field-error-icon" />'; 
                                             echo $errors['reg_password_error'];
                                         }
                                     ?>
@@ -311,7 +311,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="error field-error-container">
                                     <?php 
                                         if (!empty($errors['reg_usertype_error'])) { 
-                                            echo '<img src="./public/Images/alert-icon.png" class="field-error-icon" />'; 
+                                            echo '<img src="./public/Images/alert-icon.png" alt="alert" class="field-error-icon" />'; 
                                             echo $errors['reg_usertype_error'];
                                         }
                                     ?>
