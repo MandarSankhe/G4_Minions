@@ -4,11 +4,13 @@ session_start();
 
 $username = '';
 $usertype = '';
+$userid = null;
 
 if (isset($_SESSION['username'])) {
     // Get the username and user type from the session
     $username = $_SESSION['username'];
     $usertype = $_SESSION['usertype'];
+    $userid = $_SESSION['userid'];
 }
 
 // Check if the user is an admin
@@ -16,7 +18,7 @@ $isAdmin = $usertype == 'admin';
 
 // Including the file that initializes db connection and TV class.
 include('dbinit.php');
-include('television.php');
+include('cart.php');
 
 // Create an instance of the Television class
 $tv = new Television($dbc);
@@ -31,6 +33,12 @@ $tvList = $tv->getAllTVs($searchQuery, $stockFilter, $sortOrder);
 
 // Check if there are any TVs in result set
 $hasRecords = count($tvList) > 0;
+
+
+// Calculate the cart count
+$cart = new Cart($dbc, $userid);
+$cartCount = $cart-> getCartCountFromCookie();
+
 
 // Closing the database connection.
 $dbc->close();
@@ -56,6 +64,9 @@ $dbc->close();
                 <img src="./public/images/logo.png" class="logo" />
                 Minions TVstore
             </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavr" aria-controls="navbarNavr" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navbarNavr">
                 <ul class="navbar-nav ms-auto nav-items">
                     <li class="nav-item">
@@ -65,7 +76,7 @@ $dbc->close();
                     <!-- Do not display cart nav link for admin -->
                     <?php if(!$isAdmin) : ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="cart_page.php">Cart</a>
+                            <a class="nav-link" href="cart_page.php">Cart (<?= $cartCount ?>)</a>
                         </li>
                     <?php endif; ?>
 
