@@ -4,6 +4,18 @@ session_start();
 
 // Include the database initialization file.
 include('dbinit.php');
+include('cart.php');
+
+$userid = null;
+
+if (isset($_SESSION['userid'])) {
+    // Get the username
+    $userid = $_SESSION['userid'];
+}
+
+// Calculate the cart count
+$cart = new Cart($dbc, $userid);
+$cartCount = $cart-> getCartCountFromCookie();
 
 // Define a User class to handle registration and login operations.
 class User
@@ -182,11 +194,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Register</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="public/CSS/style.css" rel="stylesheet">
 </head>
 
 <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container nav-custom-container">
+            <a class="navbar-brand" href="index.php">
+                <img src="./public/images/logo.png" class="logo" />
+                Minions TVstore
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto nav-items">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cart_page.php">Cart (<?= $cartCount ?>)</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div class="container mt-5">
         <img src="public/Images/login-banner.png" alt="Minions Logo" class="minion-logo">
 

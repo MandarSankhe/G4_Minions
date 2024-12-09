@@ -71,7 +71,7 @@ $cartCount = $cart-> getCartCountFromCookie();
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container nav-custom-container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="index.php">
                 <img src="./public/images/logo.png" class="logo" />
                 Minions TVstore
             </a>
@@ -181,7 +181,7 @@ $cartCount = $cart-> getCartCountFromCookie();
                         <span>Total Price:</span> 
                         <span class="summary-price total-amount"><?= number_format($finalTotal, 2) ?> CAD</span>
                     </div>
-                    <a href="checkout_page.php" class="btn btn-success btn-block mt-3">Proceed to Checkout</a>
+                    <a href="cart_auth.php" class="btn btn-success btn-block mt-3">Proceed to Checkout</a>
                 </div>
             </div>
         </div>
