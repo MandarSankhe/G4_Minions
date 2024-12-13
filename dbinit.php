@@ -76,7 +76,7 @@ $dbc->query($addresses_table);
 $order_table = "CREATE TABLE IF NOT EXISTS `Order` (
     OrderID INT AUTO_INCREMENT PRIMARY KEY,
     userid INT NOT NULL,
-    date DATETIME NOT NULL,
+    date DATETIME DEFAULT NOW() NOT NULL,
     total DECIMAL(10, 2) NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
